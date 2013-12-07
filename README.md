@@ -284,6 +284,7 @@ Send a full or partial registry object to the registry.  This will have the foll
 * Any fields which are not mentioned will be left as-is
 * The old version of the record will be stored
 
+.
 
     PUT /record/<id> [registry object]
 
