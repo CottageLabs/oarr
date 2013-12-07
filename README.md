@@ -294,6 +294,7 @@ Send a replacement registry object to the registry.  This will have the followin
 * All fields in the object which are considered to be part of the registry will be completely replaced.  This will not affect third-party specific aspects of the record, or statistics
 * The old version of the record will be stored
 
+.
 
     DELETE /record/<id> [list of fields]
 
@@ -304,6 +305,7 @@ Send a request to remove a specified list of fields from the record.  This will 
 * All fields supplied will be removed from the registry
 * The old version of the record will be stored
 
+.
 
     DELETE /record/<id>
 
@@ -321,6 +323,7 @@ Send a new statistic to the registry from a third party which is calculating the
 * If the third party does not have the right to add statistics, this request will be rejected
 * The statistic will be added to the registry object, attributed to the third party
 
+.
 
     DELETE /record/<id>/stat/<datestamp>
     
