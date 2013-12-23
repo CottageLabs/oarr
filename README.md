@@ -81,7 +81,7 @@ This represents the full dataset required to be captured for the registry.  It i
                     "verson" : "<version of software used to provide this repository>",
                     "url" : "<url for the software/this version of the software>"
                 }
-            ]
+            ],
             "contact" : [
                 {
                     "role" : ["<contact role with regard to this repository>"]
@@ -96,7 +96,9 @@ This represents the full dataset required to be captured for the registry.  It i
                         "phone": "<phone number of contact>",
                         "lat" : "<latitude of contact location>",
                         "long" : "<longitude of contact location>"
-                    }
+                    },
+                    "created_date" : "<date this contact record was created>",
+                    "last_modified" : "<date this contact record was last modified>"
                 }
             ],
             "organisation" : [
@@ -111,7 +113,9 @@ This represents the full dataset required to be captured for the registry.  It i
                         "acronym" : "<acronym of organisation>",
                         "lat" : "<latitude of organisation>",
                         "long" : "<longitude of organisation>"
-                    }
+                    },
+                    "created_date" : "<date this contact record was created>",
+                    "last_modified" : "<date this contact record was last modified>"
                 }
             ]
             "policy" : [
@@ -159,11 +163,13 @@ This represents the full dataset required to be captured for the registry.  It i
                     {
                         "date" : "<date of note>",
                         "message" : "<content of note>",
-                        "by" : "<name of agent in third party posting the note>"
+                        "by" : "<name of agent in third party posting the note>",
+                        "to" : "<contact details of user email composed to>"
                     }
                 ],
                 "date_added" : "<date 3rd party approved record for inclusion>",
-                "in_opendoar" : true|false
+                "in_opendoar" : true|false,
+                "workflow" : "<pending|eligible|etc>"
             }
         ],
         
@@ -178,11 +184,19 @@ This represents the full dataset required to be captured for the registry.  It i
 * replaces/isreplacedby is not for versioning the record, it is for when another repository actually replaces the current one in the real world
 * Everything in "register" is the metadata associated with a repository in the registry.  Everything outside that is either administrator or in some way otherwise related to third party supplied information
 * The metadata field can hold multiple objects, and each object can be used to represent a different language of the metadata.  The record marked as "default" should be taken as the primary record, and if the record is requested in some other language, the record for that other language should be overlaid onto the default one.  In this way, fields which do not have translations fall back to the default language.
-* Contacts may need to be stored separately, so that we can refer to them independently via their identifier, and list the repositories associated with them
-* Organisations may need to be stored separately, so that we can refer to them independently via their identifier, and list the repositories associated with them
+* Contacts may need to be stored separately, so that we can refer to them independently via their identifier, and list the repositories associated with them.  As such they have created and last modified dates associated with them.
+* Organisations may need to be stored separately, so that we can refer to them independently via their identifier, and list the repositories associated with them.  As such they have created and last modified dates associated with them.
 * Entries in the API field will always take the first three fields: api_type, version, base_url, but then depending on the specific API, extra details may also be provided
 * The values in "admin" are examples which are relevant to OpenDOAR.  This part of the model will be extensible, and third parties may store whatever they need in here (within reason)
 * "history" indicates that we will need to store some previous versions of the record.  They may be embedded in the main record, or stored separately or in another type in the index.  Note that we will only need to revision the part of the record in "registry" - the rest of the record is under control by external parties, and it is their responsibility to manage the content in the most appropriate way.
+
+#### Questions
+
+* Does the registry object itself require a "status" (which is different from "operational___status" which is to do with the repository itself, and different from a third party's approval of a registry entry as being correct)?  The reason for this might be that the registry itself has an administrator interface (i.e. _not_ OpenDOAR), which deals with operational concerns such as spam entries.  OTOH, perhaps OpenDOAR _is_ the administrator interface (and there could be others), and spam is dealt with by an aggregate of their considerations.
+
+### A thought on data storage
+
+It may be that we want to separate completely the core data of the registry (i.e. everything in "registry"), and the data managed by third parties.  We may even want to make third parties totally responsible for their workflows, although some of this information (such as statistics, or whether a record is "approved" by some third party such as OpenDOAR) could be relevant to _other_ third parties.
 
 
 ## Third Party Account Model
