@@ -149,6 +149,7 @@ This represents the full dataset required to be captured for the registry.  It i
         
         "statistics": [
             {
+                "id" : "<opaque identifier for this statistical record>",
                 "value" : "<the numerical statistic, whatever it is>",
                 "type" : "<the type of statistic>",
                 "date" : "<date the statistic was generated>",
@@ -204,23 +205,32 @@ It may be that we want to separate completely the core data of the registry (i.e
 The third party account model describes the information we need to know about any client which has read-write access to the core registry.
 
     {
-        "id" : "<opaque identifier for this client>",
-        "core_fields" : [<list of core metadata fields the client can modify>],
-        "stats" : true|false,
-        "extensions" : [<list of client-supplied metadata extension fields allowed>],
+        "id" : "<opaque identifier for this third party>",
+        "name" : "<human readable name for this third party>",
+        "contact" : [
+            {
+                "name" : "<contact name>",
+                "email" : "<contact email>"
+            }
+        ]
+        "access" : {
+            "registry" : true|false,
+            "statistics" : true|false,
+            "admin" : true|false
+        }
+        "admin_schema" : {<the admin schema used by this third party>},
         "auth_token" : "<account's API authentication token>",
-        "name" : "<name of client>",
-        "email" : "<email address for client>",
-        "custom_fields" : [<list of client-specific admin fields allowed>],
-        "update" : true|false,
-        "replace" : true|false,
-        "delete_fields" : true|false
-        "delete" : true|false
     }
 
-The focus of this model is in defining the limits of the third party's access to the core data model.  It lists which core_fields the client can modify, whether they can add statistics to the registry, lists fields that they will supply that are beyond the standard OARR registry field-set, and lists the fields that will be stored in their own client-specific area of the model.
+### Notes on the Third Party Account Model
 
-NOTE: as the core data model is hierarchic, and not simple key/value pairs, we will need to think more about what it means to "limit" a third party to a specific field.  They could, after all, add entire objects of vast complexity inside a single field, if the process by which they interact is not properly constrained.
+* The third party has both an opaque identifier (assigned by the registry) and a human-readable name (assigned by the third party)
+* Third parties may have multiple contacts
+* The "access" object provides coarse-grained control over the rights the third party has
+    * "registry" - the third party may create/modify/delete elements in the registry portion of the data model.  The registry will apply a schema to the data model which third parties must comply with
+    * "statistics" - the third party may create/modify/delete statistics (it may only modify and delete statistics which it created).
+    * "admin" - the third party may store administrative data in the registry.  It will only be able to write data to its own admin portion of the model
+* "admin_schema" allows the third party to specify in advance the data it will store in the admin area of the registry.  Not sure yet how this will work, but it is to allow us to review whether the client is storing too much data, and will allow us to also reject any objects they supply us which do not meet these criteria
 
 ## Required Vocabularies
 
@@ -292,7 +302,8 @@ There are a number of pre-existing options for this API endpoint, including Reso
 
 Send a full or partial registry object to the registry.  This will have the following effects:
 
-* If there are any fields provided that the third party does not have the rights to modify, the request as a whole will be rejected
+* If the third party does not have the right to access the registry, the request will be rejected
+* If the object violates the registry schema, the request will be rejected
 * any fields that are provided will be overwritten on the target object
 * any new fields will be added to the target object
 * Any fields which are not mentioned will be left as-is
@@ -304,29 +315,25 @@ Send a full or partial registry object to the registry.  This will have the foll
 
 Send a replacement registry object to the registry.  This will have the following effects:
 
-* If the third party does not have the right to replace, the request will be rejected
+* If the third party does not have the right to access the registry, the request will be rejected
 * All fields in the object which are considered to be part of the registry will be completely replaced.  This will not affect third-party specific aspects of the record, or statistics
 * The old version of the record will be stored
 
+The third party may use this method to remove data from the object, by sending a replacement object with fewer fields to replace the existing one.
+
 .
 
-    DELETE /record/<id> [list of fields]
+    DELETE /record/<id> 
 
-Send a request to remove a specified list of fields from the record.  This will have the following effects:
+Send a request to remove the registry object.  This will have the following effects:
 
-* If the third party does not have the right to "delete fields", the request will be rejected
-* If the third party does not have the rights to modify those fields, the request as a whole will be rejected
-* All fields supplied will be removed from the registry
+* If the third party does not have the right to access the registry, the request will be rejected
+* The registry object will have all of its fields removed, but this will not affect third party data or statistics data
+* The registry object will be marked as "withdrawn" until such time as new fields are added.  This provides a tombstone for deleted records.
 * The old version of the record will be stored
 
 .
 
-    DELETE /record/<id>
-
-Send a request to remove a object entirely from the registry.  This will have the following effects:
-
-* If the third party does not have the right to "delete", the request will be rejected
-* The record will be effectively deleted (soft deleted)
 
 ### Provide Statistics (Read-Write)
 
@@ -334,17 +341,20 @@ Send a request to remove a object entirely from the registry.  This will have th
 
 Send a new statistic to the registry from a third party which is calculating them.  This will have the following effects:
 
-* If the third party does not have the right to add statistics, this request will be rejected
+* If the third party does not have the right to access statistics, this request will be rejected
 * The statistic will be added to the registry object, attributed to the third party
+* The statistic will receive an ID which will be returned to the client in the response
 
 .
 
-    DELETE /record/<id>/stat/<datestamp>
+    DELETE /record/<id>/stat/<stat_id>
     
-Remove any statistic which was created by the third party for the given datestamp.  This will have the following effects:
+Remove any statistic which was created by the third party with the given statistic identifier.  This will have the following effects:
 
-* If the third party does not have the right to add statistics, this request will be rejected
-* Any statistic attributed to the third party which was added at the given datestamp will be removed from the registry object
+* If the third party does not have the right to access statistics, this request will be rejected
+* Any statistic attributed to the third party which has the given id will be removed from the registry object
+* No record of the statistic will be kept
+
 
 ### Provide Third Party-Specific Data (Read-Write)
 
@@ -352,8 +362,8 @@ Remove any statistic which was created by the third party for the given datestam
 
 Provide a complete new admin record for the authenticating third party.  This will have the following effects:
 
-* If the third party does not have the right to add administrative data, this request will be rejected
-* If the third party attempts to add field which are not registered as being allowed, this request will be rejected as a whole
+* If the third party does not have the right to access admin, this request will be rejected
+* If the third party attempts to add fields which are not registered as being allowed by their schema, this request will be rejected as a whole
 * The existing admin record for the third party will be completely replaced with the new record.  All previous values will be lost.
 * No new version of the item will be created - third parties must maintain their own revision history if they desire
 
