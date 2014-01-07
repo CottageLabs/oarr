@@ -46,11 +46,11 @@ This represents the full dataset required to be captured for the registry.  It i
         "created_date" : "<datestamp of record creation time>",
         "version_created" : "<datestampe of when the current version of the object was created>",
         
-        "replaces" : "<id of repository this one replaces>",
-        "isreplacedby" : "<id of repository this one is replaced by>",
-        
         "register" : {
+            "replaces" : "<oarr uri of repository this one replaces>",
+            "isreplacedby" : "<oarr uri of repository this one is replaced by>",
             "operational_status" : "<status flag for this repository>",
+            
             "repository_type" : [<list of vocabulary terms for the repository>],
             "certification" : [<list of certifications held by this repository>],
             "content_type" : [<list of vocabulary terms for the content in this repository>]
@@ -157,22 +157,13 @@ This represents the full dataset required to be captured for the registry.  It i
             }
         ],
         
-        "admin" : [
-            {
-                "third_party" : "<name/id of third party (e.g. opendoar)>",
-                "note" : [
-                    {
-                        "date" : "<date of note>",
-                        "message" : "<content of note>",
-                        "by" : "<name of agent in third party posting the note>",
-                        "to" : "<contact details of user email composed to>"
-                    }
-                ],
+        "admin" : {
+            "<third_party name>" : {
                 "date_added" : "<date 3rd party approved record for inclusion>",
                 "in_opendoar" : true|false,
                 "workflow" : "<pending|eligible|etc>"
             }
-        ],
+        },
         
         "history" : [
             "date" : "<date this history record was created>",
@@ -189,16 +180,8 @@ This represents the full dataset required to be captured for the registry.  It i
 * Organisations may need to be stored separately, so that we can refer to them independently via their identifier, and list the repositories associated with them.  As such they have created and last modified dates associated with them.
 * Entries in the API field will always take the first three fields: api_type, version, base_url, but then depending on the specific API, extra details may also be provided
 * The values in "admin" are examples which are relevant to OpenDOAR.  This part of the model will be extensible, and third parties may store whatever they need in here (within reason)
+* <third_party name> provides namespacing for admin fields, so that they unambiguously relate to the correct third party
 * "history" indicates that we will need to store some previous versions of the record.  They may be embedded in the main record, or stored separately or in another type in the index.  Note that we will only need to revision the part of the record in "registry" - the rest of the record is under control by external parties, and it is their responsibility to manage the content in the most appropriate way.
-
-#### Questions
-
-* Does the registry object itself require a "status" (which is different from "operational___status" which is to do with the repository itself, and different from a third party's approval of a registry entry as being correct)?  The reason for this might be that the registry itself has an administrator interface (i.e. _not_ OpenDOAR), which deals with operational concerns such as spam entries.  OTOH, perhaps OpenDOAR _is_ the administrator interface (and there could be others), and spam is dealt with by an aggregate of their considerations.
-
-### A thought on data storage
-
-It may be that we want to separate completely the core data of the registry (i.e. everything in "registry"), and the data managed by third parties.  We may even want to make third parties totally responsible for their workflows, although some of this information (such as statistics, or whether a record is "approved" by some third party such as OpenDOAR) could be relevant to _other_ third parties.
-
 
 ## Third Party Account Model
 
@@ -212,13 +195,12 @@ The third party account model describes the information we need to know about an
                 "name" : "<contact name>",
                 "email" : "<contact email>"
             }
-        ]
+        ],
         "access" : {
             "registry" : true|false,
             "statistics" : true|false,
             "admin" : true|false
-        }
-        "admin_schema" : {<the admin schema used by this third party>},
+        },
         "auth_token" : "<account's API authentication token>",
     }
 
@@ -230,7 +212,6 @@ The third party account model describes the information we need to know about an
     * "registry" - the third party may create/modify/delete elements in the registry portion of the data model.  The registry will apply a schema to the data model which third parties must comply with
     * "statistics" - the third party may create/modify/delete statistics (it may only modify and delete statistics which it created).
     * "admin" - the third party may store administrative data in the registry.  It will only be able to write data to its own admin portion of the model
-* "admin_schema" allows the third party to specify in advance the data it will store in the admin area of the registry.  Not sure yet how this will work, but it is to allow us to review whether the client is storing too much data, and will allow us to also reject any objects they supply us which do not meet these criteria
 
 ## Required Vocabularies
 
@@ -267,7 +248,7 @@ API usage should be logged for statistical analysis at a later date.
 
     GET /record/<id>
 
-Get the whole record for the registry entry with the given ID.
+Get the whole record for the registry entry with the given ID (will contain register and admin data)
 
 ### Discovery (Read-Only)
 
@@ -281,7 +262,7 @@ allowed params:
     from=<start result number>
     size=<page size>
 
-If there are no params provided, then the query endpoint will return everything with sensible defaults for page sizes
+If there are no params provided, then the query endpoint will return everything with sensible defaults for page sizes (will contain register and admin data)
 
 ### Change List (Read-Only)
 
@@ -292,9 +273,23 @@ allowed params:
     from=<date to provide changes from>
     until=<date to provide changes until>
     
-This lists all the records which have changed in the supplied time period.
+This lists all the records which have changed in the supplied time period (will contain register and admin data)
 
 There are a number of pre-existing options for this API endpoint, including ResourceSync, OAI-PMH and Atom.  These are all XML formats, which would place this endpoint at some odds with the rest of the API which will be JSON.
+
+### Statistics (Read-Only)
+
+    GET /record/<id>/stats?<params>
+
+allowed params:
+
+    es=<elasticsearch query over the stats documents>
+    from=<date to provide stats from>
+    until=<date to provide stats until>
+    provider=<name of third party who generated the stats>
+    type=<type of statistic to return>
+
+This lists all of the statistical events which conform to the parameters
 
 ### Record Update (Read-Write)
 
@@ -337,7 +332,7 @@ Send a request to remove the registry object.  This will have the following effe
 
 ### Provide Statistics (Read-Write)
 
-    POST /record/<id>/stat [statistic record]
+    POST /record/<id>/stats [statistic record]
 
 Send a new statistic to the registry from a third party which is calculating them.  This will have the following effects:
 
@@ -369,7 +364,153 @@ Provide a complete new admin record for the authenticating third party.  This wi
 
 ## Index Structure
 
-FIXME: Use this section to work out what the index in the core actually looks like, and what bits of data are dependent on other bits during update/delete/etc.
+### Register Index
+
+The Register Index is the place where repository metadata and administrative data about the repositories are stored.  It is also where all search queries are routed.
+
+    {
+        "id" : "<opaque identifier for this repository>",
+        "last_updated" : "<datestamp of last record modification>",
+        "created_date" : "<datestamp of record creation time>",
+        
+        "register" : {
+            "replaces" : "<oarr uri of repository this one replaces>",
+            "isreplacedby" : "<oarr uri of repository this one is replaced by>",
+            "operational_status" : "<status flag for this repository>",
+            
+            "repository_type" : [<list of vocabulary terms for the repository>],
+            "certification" : [<list of certifications held by this repository>],
+            "content_type" : [<list of vocabulary terms for the content in this repository>]
+            
+            "metadata" : [
+                {
+                    "lang" : "en",
+                    "default" : true|false
+                    "record" : {
+                        "lat" : "<latitude of repository>",
+                        "long" : "<logitude of repository>",
+                        "country" : "<country repository resides in>",
+                        "continent" : "<continent repository resides in>",
+                        "twitter" : "<repository's twitter handle>",
+                        "acronym" : "<repository name acronym>",
+                        "description" : "<free text description of repository>",
+                        "established_date" : "<date established!>",
+                        "languages" : [<languages of content found in repo>],
+                        "name" : "<name of repository>",
+                        "url" : "<url for repository home page>",
+                        "subjects" : ["<subject classifications for repository>"]
+                    }
+                }
+            ],
+            "software" : [
+                {
+                    "name" : "<name of software used to provide this repository>",
+                    "verson" : "<version of software used to provide this repository>",
+                    "url" : "<url for the software/this version of the software>"
+                }
+            ],
+            "contact" : [
+                {
+                    "role" : ["<contact role with regard to this repository>"]
+                    "details": {
+                        "id" : "<unique id for this contact across all records>",
+                        "name" : "<contact name>",
+                        "email" : "<contact email>",
+                        "address" : {
+                            <details of address>
+                        },
+                        "fax": "<fax number of contact>",
+                        "phone": "<phone number of contact>",
+                        "lat" : "<latitude of contact location>",
+                        "long" : "<longitude of contact location>"
+                    },
+                    "created_date" : "<date this contact record was created>",
+                    "last_modified" : "<date this contact record was last modified>"
+                }
+            ],
+            "organisation" : [
+                {
+                    "role" : [<organisation roles with regard to this repository>],
+                    "details" : {
+                        "id" : "<unique id for this organisation across all records>",
+                        "name" : "<name of organisation>",
+                        "address" : {
+                            <details of address>
+                        },
+                        "acronym" : "<acronym of organisation>",
+                        "lat" : "<latitude of organisation>",
+                        "long" : "<longitude of organisation>"
+                    },
+                    "created_date" : "<date this contact record was created>",
+                    "last_modified" : "<date this contact record was last modified>"
+                }
+            ]
+            "policy" : [
+                {
+                    "policy_type" : "<vocabulary term for policy>",
+                    "description" : "<description of policy terms, human readable>",
+                    "tags" : [<list of tags/vocabulary terms describing the policy>]
+                }
+            ],
+            "api" : [
+                {
+                    "api_type" : "<api type from known list or free text>",
+                    "version" : "<version of the API>",
+                    "base_url" : "<base url of API>",
+                    
+                    "metadata_prefixes" : [<list of supported prefixes>], # oai-pmh
+                    "accepts" : [<list of accepted mimetypes>], # sword
+                    "acceptPackaging" : [<list of accepted package formats>], #sword
+                }
+            ],
+            "integration": [
+                {
+                    "integrated_with" : "<type of system integrated with>",
+                    "nature" : "<nature of integration>",
+                    "url" : "<url of system integrated with, if available>",
+                    "software" : "<name of software integrated with>",
+                    "version": "<version of software integrated with>"
+                }
+            ]
+        },
+        
+        "admin" : {
+            "<third_party name>" : {
+                "date_added" : "<date 3rd party approved record for inclusion>",
+                "in_opendoar" : true|false,
+                "workflow" : "<pending|eligible|etc>"
+            }
+        }
+    }
+
+### Statistics Index
+
+Each statistic is a document in its own right in this index
+
+    {
+        "id" : "<opaque identifier for this statistical record>",
+        "about" : "<opaque identifier for the repository>",
+        "value" : <the numerical statistic, whatever it is>,
+        "type" : "<the name of the type of statistic>",
+        "date" : "<date the statistic was generated>",
+        "third_party" : "<system id that provided the statistic>"
+    }
+
+### History Index
+
+The history index contains data with the exact same content as the Register Index, with the following additions:
+
+    {
+        "ver" : "<version number for the record>",
+        "about" : "<opaque id of the repository record it is about>"
+    }
+
+Records in the history index are created in the following way:
+
+1. Retrieve original record from the Register Index
+2. Copy "_ver" from the original records meta-information (from ES) to "ver" in the record
+3. Change the key "id" to the key "about" (history records get a new "id")
+4. Store the record in the History Index
 
 ## Discovery Interface
 
