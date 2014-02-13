@@ -68,7 +68,7 @@ This represents the full dataset required to be captured for the registry.  It i
                         "acronym" : "<repository name acronym>",
                         "description" : "<free text description of repository>",
                         "established_date" : "<date established!>",
-                        "languages" : [<languages of content found in repo>],
+                        "languages" : [<languages of content found in repo (iso-639-1)>],
                         "name" : "<name of repository>",
                         "url" : "<url for repository home page>",
                         "subjects" : ["<subject classifications for repository>"]
@@ -176,6 +176,7 @@ This represents the full dataset required to be captured for the registry.  It i
 * replaces/isreplacedby is not for versioning the record, it is for when another repository actually replaces the current one in the real world
 * Everything in "register" is the metadata associated with a repository in the registry.  Everything outside that is either administrator or in some way otherwise related to third party supplied information
 * The metadata field can hold multiple objects, and each object can be used to represent a different language of the metadata.  The record marked as "default" should be taken as the primary record, and if the record is requested in some other language, the record for that other language should be overlaid onto the default one.  In this way, fields which do not have translations fall back to the default language.
+* metadata.lang and metadata.language - both the language tag and the languages of content stored in the repository should be represented with iso-639-1 language codes.
 * Contacts may need to be stored separately, so that we can refer to them independently via their identifier, and list the repositories associated with them.  As such they have created and last modified dates associated with them.
 * Organisations may need to be stored separately, so that we can refer to them independently via their identifier, and list the repositories associated with them.  As such they have created and last modified dates associated with them.
 * Entries in the API field will always take the first three fields: api_type, version, base_url, but then depending on the specific API, extra details may also be provided
@@ -387,15 +388,13 @@ The Register Index is the place where repository metadata and administrative dat
                     "lang" : "en",
                     "default" : true|false
                     "record" : {
-                        "lat" : "<latitude of repository>",
-                        "long" : "<logitude of repository>",
                         "country" : "<country repository resides in>",
                         "continent" : "<continent repository resides in>",
                         "twitter" : "<repository's twitter handle>",
                         "acronym" : "<repository name acronym>",
                         "description" : "<free text description of repository>",
                         "established_date" : "<date established!>",
-                        "languages" : [<languages of content found in repo>],
+                        "languages" : [<languages of content found in repo (iso-639-1)>],
                         "name" : "<name of repository>",
                         "url" : "<url for repository home page>",
                         "subjects" : ["<subject classifications for repository>"]
@@ -422,7 +421,7 @@ The Register Index is the place where repository metadata and administrative dat
                         "fax": "<fax number of contact>",
                         "phone": "<phone number of contact>",
                         "lat" : "<latitude of contact location>",
-                        "long" : "<longitude of contact location>"
+                        "lon" : "<longitude of contact location>"
                     },
                     "created_date" : "<date this contact record was created>",
                     "last_modified" : "<date this contact record was last modified>"
@@ -432,14 +431,13 @@ The Register Index is the place where repository metadata and administrative dat
                 {
                     "role" : [<organisation roles with regard to this repository>],
                     "details" : {
-                        "id" : "<unique id for this organisation across all records>",
                         "name" : "<name of organisation>",
-                        "address" : {
-                            <details of address>
-                        },
+                        "unit" : "<name of organisation's unit responsible>"
+                        "address" : "<postal address for organisation>"
                         "acronym" : "<acronym of organisation>",
-                        "lat" : "<latitude of organisation>",
-                        "long" : "<longitude of organisation>"
+                        "unit_acronym" : "<acronym of unit responsible>",
+                        "lat" : "<latitude of organisation/unit>",
+                        "lon" : "<longitude of organisation/unit>"
                     },
                     "created_date" : "<date this contact record was created>",
                     "last_modified" : "<date this contact record was last modified>"
@@ -568,6 +566,8 @@ This would periodically query ROAR and attempt to locate repositories which are 
 ### The Suggest Module
 
 A User Interface which allows end-users to suggest a repository for inclusion into the registry.  This may be deployed closely aligned with the Discovery Interface, although could still be a stand-alone third party module.
+
+The Suggest Module should also expose an API so that it - in turn - can be embedded into other systems (e.g. CORE) which may have repositories to suggest to the registry.
 
 ### Link-Checker Module
 
