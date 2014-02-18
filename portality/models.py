@@ -122,33 +122,36 @@ class Register(dao.RegisterDAO):
         "id" : "<opaque identifier for this repository>",
         "last_updated" : "<datestamp of last record modification>",
         "created_date" : "<datestamp of record creation time>",
-
+        
         "register" : {
             "replaces" : "<oarr uri of repository this one replaces>",
             "isreplacedby" : "<oarr uri of repository this one is replaced by>",
             "operational_status" : "<status flag for this repository>",
-
-            "repository_type" : [<list of vocabulary terms for the repository>],
-            "certification" : [<list of certifications held by this repository>],
-            "content_type" : [<list of vocabulary terms for the content in this repository>]
-
+            
             "metadata" : [
                 {
                     "lang" : "en",
                     "default" : true|false
                     "record" : {
-                        "lat" : "<latitude of repository>",
-                        "long" : "<logitude of repository>",
                         "country" : "<country repository resides in>",
                         "continent" : "<continent repository resides in>",
                         "twitter" : "<repository's twitter handle>",
                         "acronym" : "<repository name acronym>",
                         "description" : "<free text description of repository>",
                         "established_date" : "<date established!>",
-                        "languages" : [<languages of content found in repo>],
+                        "language" : [<languages of content found in repo (iso-639-1)>],
                         "name" : "<name of repository>",
                         "url" : "<url for repository home page>",
-                        "subjects" : ["<subject classifications for repository>"]
+                        "subject" : [
+                            { 
+                                "scheme" : "<classification scheme>",
+                                "term" : "<classification term>",
+                                "code" : "<classification code>"
+                            }
+                        ],
+                        "repository_type" : [<list of vocabulary terms for the repository>],
+                        "certification" : [<list of certifications held by this repository>],
+                        "content_type" : [<list of vocabulary terms for the content in this repository>]
                     }
                 }
             ],
@@ -163,43 +166,41 @@ class Register(dao.RegisterDAO):
                 {
                     "role" : ["<contact role with regard to this repository>"]
                     "details": {
-                        "id" : "<unique id for this contact across all records>",
                         "name" : "<contact name>",
                         "email" : "<contact email>",
-                        "address" : {
-                            <details of address>
-                        },
+                        "address" : "<postal address for contact>",
                         "fax": "<fax number of contact>",
                         "phone": "<phone number of contact>",
                         "lat" : "<latitude of contact location>",
-                        "long" : "<longitude of contact location>"
-                    },
-                    "created_date" : "<date this contact record was created>",
-                    "last_modified" : "<date this contact record was last modified>"
+                        "lon" : "<longitude of contact location>",
+                        "job_title" : "<contact job title>"
+                    }
                 }
             ],
             "organisation" : [
                 {
                     "role" : [<organisation roles with regard to this repository>],
                     "details" : {
-                        "id" : "<unique id for this organisation across all records>",
                         "name" : "<name of organisation>",
-                        "address" : {
-                            <details of address>
-                        },
                         "acronym" : "<acronym of organisation>",
-                        "lat" : "<latitude of organisation>",
-                        "long" : "<longitude of organisation>"
-                    },
-                    "created_date" : "<date this contact record was created>",
-                    "last_modified" : "<date this contact record was last modified>"
+                        "url" : "<organisation url>",
+                        
+                        "unit" : "<name of organisation's unit responsible>"
+                        "unit_acronym" : "<acronym of unit responsible>",
+                        "unit_url" : "<url of responsible unit>",
+                        
+                        "country" : "<country repository resides in>",
+                        "lat" : "<latitude of organisation/unit>",
+                        "lon" : "<longitude of organisation/unit>"
+                    }
                 }
             ]
             "policy" : [
                 {
                     "policy_type" : "<vocabulary term for policy>",
+                    "policy_grade" : "<vocabulary term for quality of policy>",
                     "description" : "<description of policy terms, human readable>",
-                    "tags" : [<list of tags/vocabulary terms describing the policy>]
+                    "terms" : [<list of vocabulary terms describing the policy>]
                 }
             ],
             "api" : [
@@ -207,7 +208,7 @@ class Register(dao.RegisterDAO):
                     "api_type" : "<api type from known list or free text>",
                     "version" : "<version of the API>",
                     "base_url" : "<base url of API>",
-
+                    
                     "metadata_prefixes" : [<list of supported prefixes>], # oai-pmh
                     "accepts" : [<list of accepted mimetypes>], # sword
                     "acceptPackaging" : [<list of accepted package formats>], #sword
@@ -223,12 +224,11 @@ class Register(dao.RegisterDAO):
                 }
             ]
         },
-
+        
         "admin" : {
             "<third_party name>" : {
                 "date_added" : "<date 3rd party approved record for inclusion>",
-                "in_opendoar" : true|false,
-                "workflow" : "<pending|eligible|etc>"
+                "in_opendoar" : true|false
             }
         }
     }
@@ -239,7 +239,23 @@ class Register(dao.RegisterDAO):
     #
     # Probably the most important thing will be making sure that users aren't just
     # dumping junk into it.  So some kind of schema validation, maybe.
-    pass
+    
+    @property
+    def register(self):
+        return self.data.get("register")
+    
+    @register.setter:
+    def register(self, reg)
+        self.data["register"] = reg
+    
+    def set_admin(self, third_party, record):
+        if "admin" not in self.data:
+            self.data["admin"] = {}
+        self.data["admin"][third_party] = record
+    
+    def get_admin(self, third_party):
+        return self.data.get("admin", {}).get(third_party)
+    
 
 class History(dao.HistoryDAO, Register):
     """
