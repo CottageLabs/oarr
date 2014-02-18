@@ -1,31 +1,49 @@
 import requests, HTMLParser
 from lxml import etree
+import StringIO
+from portality import models
 
 h = HTMLParser.HTMLParser()
 
+"""
 resp = requests.get("http://opendoar.org/api13.php?all=y&show=max")
 
 # do something to convert the request into a stream reader, like use StringIO
+
+f = StringIO.StringIO(resp.text)
+"""
+
+path = "opendoar.xml"
+f = open(path)
 
 xml = etree.parse(f)
 root = xml.getroot()
 repos = root.find("repositories")
 
-def _extract(repo, field, target_dict, target_field, unescape=False):
+def _extract(repo, field, target_dict, target_field, unescape=False, lower=False, cast=None):
     el = repo.find(field)
     if el is not None:
         val = el.text
         if val is not None:
              if unescape:
                 val = h.unescape(val)
+             if lower:
+                val = val.lower()
+             if cast is not None:
+                val = cast(val)
              target_dict[target_field] = val
 
-for repo in repos:
-    # register for opendoar specific third-party data
+def migrate_repo(repo):
+    # the various components we need to assemble
     opendoar = {}
     metadata = {}
     organisation = {}
+    contacts = []
     apis = []
+    statistics = {}
+    register = {}
+    software = {}
+    policies = []
     
     # original opendoar id
     odid = repo.get("rID")
@@ -33,10 +51,10 @@ for repo in repos:
         opendoar["rid"] = odid
     
     # repository name
-    _extract(repo, "rName", metadata, "name", True)
+    _extract(repo, "rName", metadata, "name", unescape=True)
     
     # repository acronym
-    _extract(repo, "rAcronym", metadata, "acronym", True)
+    _extract(repo, "rAcronym", metadata, "acronym", unescape=True)
     
     # repository url
     _extract(repo, "rUrl", metadata, "url")
@@ -47,10 +65,140 @@ for repo in repos:
     if "base_url" in oai:
         apis.append(oai)
     
+    # organisational details
+    _extract(repo, "uName", organisation, "unit", unescape=True)
+    _extract(repo, "uAcronym", organisation, "unit_acronym", unescape=True)
+    _extract(repo, "uUrl", organisation, "unit_url")
+    _extract(repo, "oName", organisation, "name", unescape=True)
+    _extract(repo, "oAcronym", organisation, "acronym", unescape=True)
+    _extract(repo, "oUrl", organisation, "url")
+    _extract(repo, "paLatitude", organisation, "lat", cast=float)
+    _extract(repo, "paLongitude", organisation, "lon", cast=float)
     
+    cel = repo.find("country")
+    _extract(repo, "cIsoCode", organisation, "country", lower=True)
     
+    # repository description
+    _extract(repo, "rDescription", metadata, "description", unescape=True)
     
+    # remarks
+    _extract(repo, "rRemarks", opendoar, "remarks", unescape=True)
+    
+    # statistics
+    _extract(repo, "rNumOfItems", statistics, "value", cast=int)
+    _extract(repo, "rDateHarvested", statistics, "date")
+    
+    # established date
+    _extract(repo, "rYearEstablished", metadata, "established_date")
+    
+    # repository type
+    _extract(repo, "repositoryType", metadata, "repository_type")
+    
+    # operational status
+    _extract(repo, "operationalStatus", register, "operational_status")
+    
+    # software
+    _extract(repo, "rSoftWareName", software, "name", unescape=True)
+    _extract(repo, "rSoftWareVersion", software, "version")
+    
+    # subject classifications
+    classes = repo.find("classes")
+    if classes is not None:
+        metadata["subject"] = []
+        for c in classes:
+            subject = {}
+            _extract(c, "clCode", subject, "code")
+            _extract(c, "clTitle", subject, "term", unescape=True)
+            metadata["subject"].append(subject)
+    
+    # languages
+    langs = repo.find("languages")
+    if langs is not None:
+        metadata["language"] = []
+        for l in langs:
+            code = l.find("lIsoCode")
+            metadata["language"].append(code.text)
+    
+    # content types
+    ctel = repo.find("contentTypes")
+    if ctel is not None:
+        metadata["content_type"] = []
+        for ct in ctel:
+            metadata["content_type"].append(ct.text)
+    
+    # policies
+    polel = repo.find("policies")
+    for p in polel:
+        policy = {}
+        _extract(p, "policyType", policy, "policy_type")
+        _extract(p, "policyGrade", policy, "policy_grade")
+        posel = p.find("poStandard")
+        if posel is not None:
+            policy["terms"] = []
+            for item in posel:
+                policy["terms"].append(item.text)
+        policies.append(policy)
+    
+    # contacts
+    conel = repo.find("contacts")
+    for contact in conel:
+        cont_details = {}
+        _extract(contact, "pName", cont_details, "name", unescape=True)
+        _extract(contact, "pJobTitle", cont_details, "job_title", unescape=True)
+        _extract(contact, "pEmail", cont_details, "email")
+        _extract(contact, "pPhone", cont_details, "phone")
+        
+        has_phone = contact.find("pPhone") is not None and contact.find("pPhone").text is not None
+        
+        # add the top level repo data about address and phone
+        _extract(repo, "postalAddress", cont_details, "address", unescape=True)
+        if not has_phone:
+            _extract(repo, "paPhone", cont_details, "phone")
+        _extract(repo, "paFax", cont_details, "fax")
+        
+        contacts.append(cont_details)
 
+    # now assemble the object
+    register["metadata"] = [
+        {
+            "lang" : "en",
+            "default" : True,
+            "record" : metadata
+        }
+    ]
+    register["software"] = [software]
+    register["contact"] = [{"details" : c} for c in contacts]
+    register["organisation"] = [{"details" : organisation}]
+    register["policy"] = policies
+    register["api"] = apis
+    
+    opendoar["in_opendoar"] = True
+    
+    record = {
+        "register" : register,
+        "admin" : {
+            "opendoar" : opendoar
+        }
+    }
+    
+    statistics["third_party"] = "opendoar"
+    statistics["type"] = "item_count"
+    
+    return record, [statistics]
+
+for repo in repos:
+    record, stats = migrate_repo(repo)
+    print record
+    print stats
+    r = models.Register(record)
+    r.save()
+    about = r.id
+    for stat in stats:
+        stat["about"] = about
+        s = models.Statistics(stat)
+        s.save()
+    
+    
 """
 Full record structure
 

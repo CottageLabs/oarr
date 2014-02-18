@@ -1,4 +1,5 @@
 import esprit
+from portality.core import app
 
 class AccountDAO(esprit.dao.DomainObject):
     __type__ = "account"
@@ -20,7 +21,7 @@ class StatisticsDAO(esprit.dao.DomainObject):
     __type__ = "statistics"
     __conn__ = esprit.raw.Connection(app.config['ELASTIC_SEARCH_HOST'], app.config['ELASTIC_SEARCH_DB'])
     
-    def save(self, conn=None, created=True, updated=True):
+    def save(self, conn=None, created=False, updated=False): # Note that we don't care about last_updated or created_date for stats
         # just a shim in case we want to do any tasks before doing the actual save
         super(StatisticsDAO, self).save(conn=conn, created=created, updated=updated)
 

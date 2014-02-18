@@ -379,10 +379,6 @@ The Register Index is the place where repository metadata and administrative dat
             "isreplacedby" : "<oarr uri of repository this one is replaced by>",
             "operational_status" : "<status flag for this repository>",
             
-            "repository_type" : [<list of vocabulary terms for the repository>],
-            "certification" : [<list of certifications held by this repository>],
-            "content_type" : [<list of vocabulary terms for the content in this repository>]
-            
             "metadata" : [
                 {
                     "lang" : "en",
@@ -394,10 +390,19 @@ The Register Index is the place where repository metadata and administrative dat
                         "acronym" : "<repository name acronym>",
                         "description" : "<free text description of repository>",
                         "established_date" : "<date established!>",
-                        "languages" : [<languages of content found in repo (iso-639-1)>],
+                        "language" : [<languages of content found in repo (iso-639-1)>],
                         "name" : "<name of repository>",
                         "url" : "<url for repository home page>",
-                        "subjects" : ["<subject classifications for repository>"]
+                        "subject" : [
+                            { 
+                                "scheme" : "<classification scheme>",
+                                "term" : "<classification term>",
+                                "code" : "<classification code>"
+                            }
+                        ],
+                        "repository_type" : [<list of vocabulary terms for the repository>],
+                        "certification" : [<list of certifications held by this repository>],
+                        "content_type" : [<list of vocabulary terms for the content in this repository>]
                     }
                 }
             ],
@@ -412,19 +417,15 @@ The Register Index is the place where repository metadata and administrative dat
                 {
                     "role" : ["<contact role with regard to this repository>"]
                     "details": {
-                        "id" : "<unique id for this contact across all records>",
                         "name" : "<contact name>",
                         "email" : "<contact email>",
-                        "address" : {
-                            <details of address>
-                        },
+                        "address" : "<postal address for contact>",
                         "fax": "<fax number of contact>",
                         "phone": "<phone number of contact>",
                         "lat" : "<latitude of contact location>",
-                        "lon" : "<longitude of contact location>"
-                    },
-                    "created_date" : "<date this contact record was created>",
-                    "last_modified" : "<date this contact record was last modified>"
+                        "lon" : "<longitude of contact location>",
+                        "job_title" : "<contact job title>"
+                    }
                 }
             ],
             "organisation" : [
@@ -432,22 +433,25 @@ The Register Index is the place where repository metadata and administrative dat
                     "role" : [<organisation roles with regard to this repository>],
                     "details" : {
                         "name" : "<name of organisation>",
-                        "unit" : "<name of organisation's unit responsible>"
-                        "address" : "<postal address for organisation>"
                         "acronym" : "<acronym of organisation>",
+                        "url" : "<organisation url>",
+                        
+                        "unit" : "<name of organisation's unit responsible>"
                         "unit_acronym" : "<acronym of unit responsible>",
+                        "unit_url" : "<url of responsible unit>",
+                        
+                        "country" : "<country repository resides in>",
                         "lat" : "<latitude of organisation/unit>",
                         "lon" : "<longitude of organisation/unit>"
-                    },
-                    "created_date" : "<date this contact record was created>",
-                    "last_modified" : "<date this contact record was last modified>"
+                    }
                 }
             ]
             "policy" : [
                 {
                     "policy_type" : "<vocabulary term for policy>",
+                    "policy_grade" : "<vocabulary term for quality of policy>",
                     "description" : "<description of policy terms, human readable>",
-                    "tags" : [<list of tags/vocabulary terms describing the policy>]
+                    "terms" : [<list of vocabulary terms describing the policy>]
                 }
             ],
             "api" : [
@@ -475,8 +479,7 @@ The Register Index is the place where repository metadata and administrative dat
         "admin" : {
             "<third_party name>" : {
                 "date_added" : "<date 3rd party approved record for inclusion>",
-                "in_opendoar" : true|false,
-                "workflow" : "<pending|eligible|etc>"
+                "in_opendoar" : true|false
             }
         }
     }
