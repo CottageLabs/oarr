@@ -2,7 +2,7 @@ import os, requests, json, esprit
 from flask import Flask
 
 from portality import settings
-#from flask.ext.login import LoginManager, current_user
+from flask.ext.login import LoginManager, current_user
 #login_manager = LoginManager()
 
 def create_app():

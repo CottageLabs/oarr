@@ -244,8 +244,8 @@ class Register(dao.RegisterDAO):
     def register(self):
         return self.data.get("register")
     
-    @register.setter:
-    def register(self, reg)
+    @register.setter
+    def register(self, reg):
         self.data["register"] = reg
     
     def set_admin(self, third_party, record):
