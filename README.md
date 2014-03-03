@@ -271,12 +271,16 @@ If there are no params provided, then the query endpoint will return everything 
 
 allowed params:
 
-    from=<date to provide changes from>
+    since=<date to provide changes from>
     until=<date to provide changes until>
+    from=<start result number>
+    size=<page size>
     
 This lists all the records which have changed in the supplied time period (will contain register and admin data)
 
 There are a number of pre-existing options for this API endpoint, including ResourceSync, OAI-PMH and Atom.  These are all XML formats, which would place this endpoint at some odds with the rest of the API which will be JSON.
+
+For the time being this is being implemented as a straight JSON endpoint, with paging.
 
 ### Statistics (Read-Only)
 

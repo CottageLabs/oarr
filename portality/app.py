@@ -153,6 +153,8 @@ def query():
 def change():
     from_date = request.values.get("from") # <date to provide changes from>
     until_date =  request.values.get("until") # <date to provide changes until>
+    from_number = request.values.get("from") # <start result number>
+    size = request.values.get("size") # <page size>
     
     # need to check that the dates are correct
     if from_date is not None and not _validate_date(from_date):
@@ -160,10 +162,10 @@ def change():
     if until_date is not None and not _validate_date(until_date):
         abort(400)
     
-    result_objects = RegistryAPI.change_list(from_date=from_date, until_date=until_date)
+    es_result = RegistryAPI.change_list(from_date=from_date, until_date=until_date, from_number=from_number, size=size)
     
     # return a json response
-    resp = make_response(json.dumps(result_objects))
+    resp = make_response(json.dumps(es_result))
     resp.mimetype = "application/json"
     return resp
 

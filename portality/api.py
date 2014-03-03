@@ -13,6 +13,9 @@ class RegistryAPI(object):
         return es_results
     
     @classmethod
-    def change_list(cls, from_date=None, until_date=None):
-        range_query = dao.SearchQuery(from_date=from_date, until_date=until_date)
-        # TODO: work out how best to represent a Change List
+    def change_list(cls, from_date=None, until_date=None, from_number=None, size=None):
+        range_query = dao.SearchQuery(from_number=from_number, size=size, 
+                        from_date=from_date, until_date=until_date, order=("last_updated", "asc"))
+        es_results = models.Register.query(q=range_query.query())
+        return es_results
+        

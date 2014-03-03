@@ -34,7 +34,10 @@ class HistoryDAO(esprit.dao.DomainObject):
         super(HistoryDAO, self).save(conn=conn, created=created, updated=updated)
 
 class SearchQuery(object):
-    def __init__(self, full_query=None, query_string=None, fields=None, from_number=None, size=None, from_date=None, until_date=None):
+    def __init__(self, full_query=None, query_string=None, fields=None, 
+                    from_number=None, size=None, 
+                    from_date=None, until_date=None,
+                    order=None):
         self.full_query = full_query
         self.query_string = query_string
         self.fields = fields
@@ -42,6 +45,7 @@ class SearchQuery(object):
         self.size = size
         self.from_date = from_date
         self.until_date = until_date
+        self.order = order if isinstance(order, tuple) and len(order) == 2 else None
     
     def query(self):
         q = None
@@ -70,6 +74,10 @@ class SearchQuery(object):
         
         if self.size is not None:
             q["size"] = self.size
+        
+        if self.order is not None:
+            sort_by, direction = self.order
+            q["sort"] = {sort_by : {"order" : direction}}
         
         return q
 
