@@ -18,4 +18,9 @@ class RegistryAPI(object):
                         from_date=from_date, until_date=until_date, order=("last_updated", "asc"))
         es_results = models.Register.query(q=range_query.query())
         return es_results
+    
+    @classmethod
+    def get_statistics(cls, record_id, from_date=None, until_date=None, provider=None, stat_type=None):
+        return models.Statistics.list_statistics(record_id, from_date=from_date, until_date=until_date, provider=provider, stat_type=stat_type)
+        
         

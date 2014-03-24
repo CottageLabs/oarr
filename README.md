@@ -288,7 +288,6 @@ For the time being this is being implemented as a straight JSON endpoint, with p
 
 allowed params:
 
-    es=<elasticsearch query over the stats documents>
     from=<date to provide stats from>
     until=<date to provide stats until>
     provider=<name of third party who generated the stats>

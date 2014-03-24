@@ -77,11 +77,18 @@ def stat(record_id, stat_id):
 @app.route("/record/<record_id>/stats", methods=["GET", "POST"])
 def stats(record_id):
     if request.method == "GET":
-        es = request.values.get("es") # <elasticsearch query over the stats documents>
         from_date = request.values.get("from") # <date to provide stats from>
         until_date = request.values.get("until") # <date to provide stats until>
         provider = request.values.get("provider") # <name of third party who generated the stats>
         stat_type = request.values.get("type") # <type of statistic to return>
+        
+        statistics = RegistryAPI.get_statistics(record_id, from_date=from_date, until_date=until_date, provider=provider, stat_type=stat_type)
+        
+        # return a json response
+        resp = make_response(json.dumps(statistics))
+        resp.mimetype = "application/json"
+        return resp
+        
     elif request.method == "POST":
         # add a new statistic
         # authenticated/authorised

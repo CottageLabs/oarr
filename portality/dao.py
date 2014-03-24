@@ -21,6 +21,13 @@ class StatisticsDAO(esprit.dao.DomainObject):
     __type__ = "statistics"
     __conn__ = esprit.raw.Connection(app.config['ELASTIC_SEARCH_HOST'], app.config['ELASTIC_SEARCH_DB'])
     
+    @classmethod
+    def list_statistics(cls, record_id, from_date=None, until_date=None, provider=None, stat_type=None):
+        stats_query = StatsQuery(record_id, from_date, until_date, provider, stat_type)
+        es_results = cls.query(q=stats_query.query())
+        stats = esprit.raw.unpack_json_result(es_results)
+        return stats
+    
     def save(self, conn=None, created=False, updated=False): # Note that we don't care about last_updated or created_date for stats
         # just a shim in case we want to do any tasks before doing the actual save
         super(StatisticsDAO, self).save(conn=conn, created=created, updated=updated)
@@ -81,7 +88,41 @@ class SearchQuery(object):
         
         return q
 
-
+class StatsQuery(object):
+    def __init__(self, record_id=None, from_date=None, until_date=None, provider=None, stat_type=None):
+        self.record_id = record_id
+        self.from_date = from_date
+        self.until_date = until_date
+        self.provider = provider
+        self.stat_type = stat_type
+    
+    def query(self):
+        q = {"query" : {"bool" : {"must" : []}}}
+        
+        if self.record_id is not None:
+            iq = {"term" : {"about.exact" : self.record_id}}
+            q["query"]["bool"]["must"].append(iq)
+        
+        if self.from_date is not None or self.until_date is not None:
+            rq = {"range" : {"last_updated" : {}}}
+            if self.from_date:
+                rq["range"]["last_updated"]["gte"] = self.from_date
+            if self.until_date:
+                rq["range"]["last_updated"]["lte"] = self.until_date
+            q["query"]["bool"]["must"].append(rq)
+        
+        if self.provider is not None:
+            pq = {"term" : {"third_party.exact" : self.provider}}
+            q["query"]["bool"]["must"].append(pq)
+        
+        if self.stat_type is not None:
+            sq = {"term" : {"type.exact" : self.stat_type}}
+            q["query"]["bool"]["must"].append(sq)
+        
+        q["size"] = 10000
+        q["sort"] = {"last_updated" : {"order" : "desc"}}
+        
+        return q
 
 
 
