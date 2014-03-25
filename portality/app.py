@@ -1,4 +1,4 @@
-from flask import Flask, request, abort, render_template, redirect, make_response
+from flask import Flask, request, abort, render_template, redirect, make_response, current_app
 from flask.views import View
 from functools import wraps
 from flask.ext.login import login_user, current_user
@@ -157,6 +157,8 @@ def record(record_id):
 def query():
     # extract all the potential query arguments
     es = request.values.get("es") # <elasticsearch query object>
+    if es is None:
+        es = request.values.get("source") # alternative location for the es query object
     q = request.values.get("q") # <free text search>
     fields = request.values.get("fields") # <list of top level fields required>
     from_number = request.values.get("from") # <start result number>
@@ -165,6 +167,8 @@ def query():
     # the es argument is an encoded json string
     if es is not None:
         es = json.loads(es)
+    
+    print es
     
     # fields is a comma separated list of values
     # which may consist only of "admin" or "register"
