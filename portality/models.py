@@ -1,5 +1,9 @@
-from portality import dao
+from portality import dao, schema
 from flask.ext.login import UserMixin
+from copy import deepcopy
+
+class ModelException(Exception):
+    pass
 
 class Account(dao.AccountDAO, UserMixin):
     """
@@ -30,7 +34,7 @@ class Account(dao.AccountDAO, UserMixin):
         self.data["name"] = name
     
     def set_auth_token(self, token):
-        self.data['auth_token'] = toke
+        self.data['auth_token'] = token
 
     def check_auth_token(self, token):
         return token is not None and token == self.data.get("auth_token")
@@ -40,6 +44,9 @@ class Account(dao.AccountDAO, UserMixin):
             self.data["contact"] = []
         self.data["contact"].append({"name" : name, "email" : email})
     
+    def set_contact(self, name, email):
+        self.data["contact"] = [{"name" : name, "email" : email}]
+    
     @property
     def contact(self):
         return self.data.get("contact", [])
@@ -48,8 +55,7 @@ class Account(dao.AccountDAO, UserMixin):
     def registry_access(self):
         return self.data.get("access", {}).get("registry", False)
     
-    @registry_access.setter
-    def registry_access(self, val):
+    def allow_registry_access(self, val):
         if "access" not in self.data:
             self.data["access"] = {}
         self.data["access"]["registry"] = val
@@ -58,8 +64,7 @@ class Account(dao.AccountDAO, UserMixin):
     def statistics_access(self):
         return self.data.get("access", {}).get("statistics", False)
     
-    @statistics_access.setter
-    def statistics_access(self, val):
+    def allow_statistics_access(self, val):
         if "access" not in self.data:
             self.data["access"] = {}
         self.data["access"]["statistics"] = val
@@ -68,8 +73,7 @@ class Account(dao.AccountDAO, UserMixin):
     def admin_access(self):
         return self.data.get("access", {}).get("admin", False)
     
-    @admin_access.setter
-    def admin_access(self, val):
+    def allow_admin_access(self, val):
         if "access" not in self.data:
             self.data["access"] = {}
         self.data["access"]["admin"] = val
@@ -117,6 +121,61 @@ class Statistics(dao.StatisticsDAO):
     def third_party(self, tp): self.data["third_party"] = third_party
 
 class Register(dao.RegisterDAO):
+    _register_schema = {
+        "fields" : ["replaces", "isreplacedby", "operational_status"],
+        "lists" : ["metadata", "software", "contact", "organisation", "policy", "api", "integration"],
+        "list_entries" : {
+            "metadata" : {
+                "bools" : ["default"],
+                "fields" : ["lang"],
+                "objects" : ["record"],
+                "object_entries" : {
+                    "record" : {
+                        "fields" : ["country", "continent", "twitter", "acronym", "description", "established_date", "name", "url"],
+                        "lists" : ["language", "subject", "repository_type", "certification", "content_type"],
+                        "list_entries" : {
+                            "subject" : {
+                                "fields" : ["scheme", "term", "code"]
+                            }
+                        }
+                    }
+                }
+            },
+            "software" : {
+                "fields" : ["name", "version", "url"]
+            },
+            "contact" : {
+                "lists" : ["role"],
+                "objects" : ["details"],
+                "object_entries" : {
+                    "details" : {
+                        "fields" : ["name", "email", "address", "fax", "phone", "lat", "lon", "job_title"]
+                    }
+                }
+            },
+            "organisation" : {
+                "lists" : ["role"],
+                "objects" : ["details"],
+                "object_entries" : {
+                    "details" : {
+                        "fields" : ["name", "acronym", "url", "unit", "unit_acronym", "unit_url", "country", "lat", "lon"]
+                    }
+                }
+            },
+            "policy" : {
+                "fields" : ["policy_type", "policy_grade", "description"],
+                "lists" : ["terms"]
+            },
+            "api" : {
+                "fields" : ["api_type", "version", "base_url"],
+                "lists" : ["metadata_prefixes", "accepts", "accept_packaging"]
+            },
+            "integration" : {
+                "fields" : ["integrated_with", "nature", "url", "software", "version"]
+            }
+        }
+    }
+    
     """
     {
         "id" : "<opaque identifier for this repository>",
@@ -211,7 +270,7 @@ class Register(dao.RegisterDAO):
                     
                     "metadata_prefixes" : [<list of supported prefixes>], # oai-pmh
                     "accepts" : [<list of accepted mimetypes>], # sword
-                    "acceptPackaging" : [<list of accepted package formats>], #sword
+                    "accept_packaging" : [<list of accepted package formats>], #sword
                 }
             ],
             "integration": [
@@ -240,6 +299,12 @@ class Register(dao.RegisterDAO):
     # Probably the most important thing will be making sure that users aren't just
     # dumping junk into it.  So some kind of schema validation, maybe.
     
+    def __init__(self, raw):
+        super(Register, self).__init__(raw)
+        valid = self._validate_register(self.data.get("register", {}))
+        if not valid:
+            raise ModelException("Raw data provided to Register is not schema valid")
+    
     @property
     def register(self):
         return self.data.get("register")
@@ -254,7 +319,28 @@ class Register(dao.RegisterDAO):
         self.data["admin"][third_party] = record
     
     def get_admin(self, third_party):
+        if "register" not in self.data:
+            self.data["register"] = {}
         return self.data.get("admin", {}).get(third_party)
+    
+    def merge_register(self, new_reg):
+        if not self._validate_register(new_reg):
+            raise ModelException("Update to register is not schema valid")
+        for k, v in new_reg.iteritems():
+            self.data["register"][k] = deepcopy(v)
+    
+    def replace_register(self, new_reg):
+        if not self._validate_register(new_reg):
+            raise ModelException("Replacement register is not schema valid")
+        self.register = deepcopy(new_reg)
+        
+    def _validate_register(self, reg):
+        try:
+            schema.validate(reg, self._register_schema)
+            return True
+        except schema.ObjectSchemaValidationError as e:
+            print e.message
+        return False
     
 
 class History(dao.HistoryDAO, Register):

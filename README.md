@@ -308,6 +308,8 @@ Send a full or partial registry object to the registry.  This will have the foll
 * Any fields which are not mentioned will be left as-is
 * The old version of the record will be stored
 
+NOTE: merge of hierarchical records is very complex, so we apply a constraint here: the merge will only happen at the root of the "register" field in the object, and each incoming field will replace the existing field of the same name.  For example, if only the "metadata" field is provided, then all other data in the existing "register" object will remian untouched, but the "metadata" field will be entirely replaced with the incoming one.
+
 .
 
     PUT /record/<id> [registry object]

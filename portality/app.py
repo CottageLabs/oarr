@@ -117,9 +117,32 @@ def record(record_id):
         return resp
     
     elif request.method == "POST":
+        # check that we are authorised
+        apikey = request.values.get("api_key")
+        acc = models.Account.pull_by_auth_token(apikey)
+        if acc is None:
+            abort(401)
+        if not acc.registry_access:
+            abort(401)
+        
+        # check that the record being updated exists
+        reg = models.Register.pull(record_id)
+        if reg is None:
+            abort(404)
+        
         # update the record
-        # authenticated/authorised
-        pass
+        try:
+            newregister = json.loads(request.data)
+        except:
+            abort(400)
+        
+        RegistryAPI.update_register(reg, newregister)
+        
+        # return a json response
+        resp = make_response(json.dumps({"result" : "success"}))
+        resp.mimetype = "application/json"
+        return resp
+    
     elif request.method == "PUT":
         # replace the record
         # authenticated/authorised

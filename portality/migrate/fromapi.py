@@ -20,7 +20,7 @@ xml = etree.parse(f)
 root = xml.getroot()
 repos = root.find("repositories")
 
-def _extract(repo, field, target_dict, target_field, unescape=False, lower=False, cast=None):
+def _extract(repo, field, target_dict, target_field, unescape=False, lower=False, cast=None, aslist=False):
     el = repo.find(field)
     if el is not None:
         val = el.text
@@ -31,6 +31,8 @@ def _extract(repo, field, target_dict, target_field, unescape=False, lower=False
                 val = val.lower()
              if cast is not None:
                 val = cast(val)
+             if aslist:
+                val = [val]
              target_dict[target_field] = val
 
 def migrate_repo(repo):
@@ -92,7 +94,7 @@ def migrate_repo(repo):
     _extract(repo, "rYearEstablished", metadata, "established_date")
     
     # repository type
-    _extract(repo, "repositoryType", metadata, "repository_type")
+    _extract(repo, "repositoryType", metadata, "repository_type", aslist=True)
     
     # operational status
     _extract(repo, "operationalStatus", register, "operational_status")
