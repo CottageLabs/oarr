@@ -5,9 +5,34 @@ class AccountDAO(esprit.dao.DomainObject):
     __type__ = "account"
     __conn__ = esprit.raw.Connection(app.config['ELASTIC_SEARCH_HOST'], app.config['ELASTIC_SEARCH_DB'])
     
+    @classmethod
+    def pull_by_auth_token(cls, auth_token):
+        q = AccountQuery(auth_token=auth_token)
+        res = cls.query(q=q.query())
+        accs = esprit.raw.unpack_json_result(res)
+        if len(accs) == 0 or accs is None:
+            return None
+        if len(accs) > 1:
+            raise AccountDAOException("more than one account with that auth_token")
+        return cls(accs[0])
+    
     def save(self, conn=None, created=True, updated=True):
         # just a shim in case we want to do any tasks before doing the actual save
         super(AccountDAO, self).save(conn=conn, created=created, updated=updated)
+
+class AccountQuery(object):
+    def __init__(self, auth_token=None):
+        self.auth_token = auth_token
+    def query(self):
+        q = {
+            "query" : {
+                "term" : {"auth_token.exact" : self.auth_token}
+            }
+        }
+        return q
+
+class AccountDAOException(Exception):
+    pass
 
 class RegisterDAO(esprit.dao.DomainObject):
     __type__ = "register"

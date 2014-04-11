@@ -24,7 +24,6 @@ class Account(dao.AccountDAO, UserMixin):
         "auth_token" : "<account's API authentication token>",
     }
     """
-    __type__ = 'account'
     
     @property
     def name(self):
@@ -121,6 +120,11 @@ class Statistics(dao.StatisticsDAO):
     def third_party(self, tp): self.data["third_party"] = third_party
 
 class Register(dao.RegisterDAO):
+    _root_schema = {
+        "fields" : ["id", "created_date", "last_updated"],
+        "objects" : ["register", "admin"]
+    }
+    
     _register_schema = {
         "fields" : ["replaces", "isreplacedby", "operational_status"],
         "lists" : ["metadata", "software", "contact", "organisation", "policy", "api", "integration"],
@@ -300,10 +304,18 @@ class Register(dao.RegisterDAO):
     # dumping junk into it.  So some kind of schema validation, maybe.
     
     def __init__(self, raw):
+        # hand to the superclass to do the basic set-up
         super(Register, self).__init__(raw)
+        
+        # validate the overall structure of the top level elements
+        root_valid = self._validate_root(self.data)
+        if not root_valid:
+            raise ModelException("Raw data provided to Register is not schema valid at the root")
+        
+        # now validate the register object itself in detail
         valid = self._validate_register(self.data.get("register", {}))
         if not valid:
-            raise ModelException("Raw data provided to Register is not schema valid")
+            raise ModelException("Raw data provided to Register is not schema valid in the register")
     
     @property
     def register(self):
@@ -325,7 +337,7 @@ class Register(dao.RegisterDAO):
     
     def merge_register(self, new_reg):
         if not self._validate_register(new_reg):
-            raise ModelException("Update to register is not schema valid")
+            raise ModelException("Update to merge as new register is not schema valid")
         for k, v in new_reg.iteritems():
             self.data["register"][k] = deepcopy(v)
     
@@ -337,6 +349,14 @@ class Register(dao.RegisterDAO):
     def _validate_register(self, reg):
         try:
             schema.validate(reg, self._register_schema)
+            return True
+        except schema.ObjectSchemaValidationError as e:
+            print e.message
+        return False
+    
+    def _validate_root(self, root):
+        try:
+            schema.validate(root, self._root_schema)
             return True
         except schema.ObjectSchemaValidationError as e:
             print e.message

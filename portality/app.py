@@ -139,7 +139,7 @@ def record(record_id):
         RegistryAPI.update_register(reg, newregister)
         
         # return a json response
-        resp = make_response(json.dumps({"result" : "success"}))
+        resp = make_response(json.dumps({"success" : "true"}))
         resp.mimetype = "application/json"
         return resp
     
@@ -151,6 +151,35 @@ def record(record_id):
         # delete the record
         # authenticated/authorised
         pass
+
+@app.route("/record", methods=["POST"])
+@jsonp
+def create_record():
+    # check that we are authorised
+    apikey = request.values.get("api_key")
+    acc = models.Account.pull_by_auth_token(apikey)
+    if acc is None:
+        abort(401)
+    if not acc.registry_access:
+        abort(401)
+    
+    # create the new record
+    try:
+        newregister = json.loads(request.data)
+    except:
+        abort(400)
+    
+    try:
+        id = RegistryAPI.create_register(newregister)
+    except:
+        abort(400)
+    
+    # return a json response
+    resp = make_response(json.dumps({"success" : "true", "id" : id, "location" : "/record/" + id}))
+    resp.headers["Location"] = "/record/" + id
+    resp.mimetype = "application/json"
+    resp.status_code = 201
+    return resp
 
 @app.route("/query", methods=["GET"])
 @jsonp

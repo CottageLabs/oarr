@@ -24,6 +24,13 @@ class RegistryAPI(object):
         return models.Statistics.list_statistics(record_id, from_date=from_date, until_date=until_date, provider=provider, stat_type=stat_type)
     
     @classmethod
+    def create_register(cls, new_register):
+        # mint the object and save
+        record = models.Register(new_register)
+        record.save()
+        return record.id
+    
+    @classmethod
     def update_register(cls, record, new_register):
         if "register" in new_register:
             new_register = new_register["register"]

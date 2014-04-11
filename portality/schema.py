@@ -43,6 +43,7 @@ def validate(obj, schema):
             # if it is an object, then validate
             object_schema = schema.get("object_entries", {}).get(k)
             if object_schema is None:
-                raise ObjectSchemaValidationError("no object entry for object " + k)
+                #raise ObjectSchemaValidationError("no object entry for object " + k)
+                pass # we are not imposing a schema on this object
             else:
                 validate(v, object_schema)
