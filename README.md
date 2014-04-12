@@ -299,11 +299,21 @@ This lists all of the statistical events which conform to the parameters
 
     POST /record [registry object]
 
-Sned a full registry object to the registry.  This will have the following effects:
+The registry object is structured as follows:
+
+    {
+        "register" : { <registry object> },
+        "admin" : {
+            "<third party name>" : {<third party object>}
+        }
+    }
+
+Send a full registry object to the registry.  This will have the following effects:
 
 * If the third party does not have the right to access the registry, the request will be rejected
 * If the object violates the registry schema, the request will be rejected
 * If the above tests are satisfied, and new record will be created in the registry
+* If an admin record is provided, only the inner object represented by the <third party name> which matches the authenticated account will be imported
 
 Returns the location of the created resource in the Location HTTP header, and also responds with a body document as follows:
 

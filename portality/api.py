@@ -1,5 +1,8 @@
 from portality import models, dao
 
+class AuthorisationException(Exception):
+    pass
+
 class RegistryAPI(object):
     @classmethod
     def get_registry_entry(cls, record_id):
@@ -24,22 +27,70 @@ class RegistryAPI(object):
         return models.Statistics.list_statistics(record_id, from_date=from_date, until_date=until_date, provider=provider, stat_type=stat_type)
     
     @classmethod
-    def create_register(cls, new_register):
+    def create_register(cls, account, new_register):
+        # check permissions on the account
+        if not account.registry_access:
+            raise AuthorisationException("This user account does not have permission to create objects in the registry")
+        
+        # ensure the register object has the right structure
+        if "register" not in new_register:
+            new_register = {"register" : new_register}
+        
+        # prune the third party account data if necessary
+        cls._prune_third_party(account, new_register)
+        
         # mint the object and save
         record = models.Register(new_register)
         record.save()
+        
+        # return the identifier of the newly created item
         return record.id
     
     @classmethod
-    def update_register(cls, record, new_register):
-        if "register" in new_register:
-            new_register = new_register["register"]
+    def update_register(cls, account, record, new_register):
+        # check permissions on the account
+        if not account.registry_access:
+            raise AuthorisationException("This user account does not have permission to modify objects in the registry")
+        
+        # ensure the register object has the right structure
+        if "register" not in new_register:
+            new_register = {"register" : new_register}
+        
+        # prune the third party account data if necessary
+        cls._prune_third_party(account, new_register)
+        
+        # merge the new register into the record and save
         record.merge_register(new_register)
         record.save()
     
     @classmethod
-    def replace_register(cls, record, new_register):
-        if "register" in new_register:
-            new_register = new_register["register"]
+    def replace_register(cls, account, record, new_register):
+        # check permissions on the account
+        if not account.registry_access:
+            raise AuthorisationException("This user account does not have permission to overwrite objects in the registry")
+            
+        # ensure the register object has the right structure
+        if "register" not in new_register:
+            new_register = {"register" : new_register}
+        
+        # prune the third party account data if necessary
+        cls._prune_third_party(account, new_register)
+        
+        # replace the register and save
         record.replace_register(new_register)
         record.save()
+    
+    @classmethod
+    def _prune_third_party(cls, account, register):
+        if "admin" not in register:
+            return
+        if len(register["admin"].keys()) == 0:
+            return
+        remove_keys = []
+        for key in register["admin"].keys():
+            if key != account.name:
+                remove_keys.append(key)
+        for k in remove_keys:
+            del register["admin"][k]
+        
+        

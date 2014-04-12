@@ -306,16 +306,7 @@ class Register(dao.RegisterDAO):
     def __init__(self, raw):
         # hand to the superclass to do the basic set-up
         super(Register, self).__init__(raw)
-        
-        # validate the overall structure of the top level elements
-        root_valid = self._validate_root(self.data)
-        if not root_valid:
-            raise ModelException("Raw data provided to Register is not schema valid at the root")
-        
-        # now validate the register object itself in detail
-        valid = self._validate_register(self.data.get("register", {}))
-        if not valid:
-            raise ModelException("Raw data provided to Register is not schema valid in the register")
+        self._full_validate(self.data)
     
     @property
     def register(self):
@@ -336,16 +327,46 @@ class Register(dao.RegisterDAO):
         return self.data.get("admin", {}).get(third_party)
     
     def merge_register(self, new_reg):
-        if not self._validate_register(new_reg):
-            raise ModelException("Update to merge as new register is not schema valid")
-        for k, v in new_reg.iteritems():
+        if not self._full_validate(new_reg):
+            raise ModelException("Unable to merge as new register is not schema valid")
+        
+        # merge the top level elements in the register
+        register = new_reg.get("register", {})
+        for k, v in register.iteritems():
             self.data["register"][k] = deepcopy(v)
+        
+        # overwrite/add the relevant admin entry
+        admin = new_reg.get("admin", {})
+        for k, v in admin.iteritems():
+            self.data["admin"][k] = deepcopy(v)
     
     def replace_register(self, new_reg):
-        if not self._validate_register(new_reg):
+        if not self._full_validate(new_reg):
             raise ModelException("Replacement register is not schema valid")
-        self.register = deepcopy(new_reg)
         
+        # overwite the register wholesale
+        nr = new_reg.get("register")
+        if nr is not None:
+            self.register = deepcopy(nr)
+        
+        # overwrite/add the relevant admin entry
+        admin = new_reg.get("admin", {})
+        for k, v in admin.iteritems():
+            self.data["admin"][k] = deepcopy(v)
+    
+    def _full_validate(self, reg):
+        # validate the overall structure of the top level elements
+        root_valid = self._validate_root(reg)
+        if not root_valid:
+            raise ModelException("Raw data provided to Register is not schema valid at the root")
+        
+        # now validate the register object itself in detail
+        valid = self._validate_register(reg.get("register", {}))
+        if not valid:
+            raise ModelException("Raw data provided to Register is not schema valid in the register")
+        
+        return True
+    
     def _validate_register(self, reg):
         try:
             schema.validate(reg, self._register_schema)
