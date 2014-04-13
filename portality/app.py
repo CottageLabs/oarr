@@ -171,9 +171,26 @@ def record(record_id):
         return resp
         
     elif request.method == "DELETE":
-        # delete the record
-        # authenticated/authorised
-        pass
+        # check that we are authorised
+        apikey = request.values.get("api_key")
+        acc = models.Account.pull_by_auth_token(apikey)
+        if acc is None:
+            abort(401)
+        if not acc.registry_access:
+            abort(401)
+        
+        # check that the record being updated exists
+        reg = models.Register.pull(record_id)
+        if reg is None:
+            abort(404)
+        
+        # delete it
+        RegistryAPI.delete_register(acc, reg)
+        
+        # return a json response
+        resp = make_response(json.dumps({"success" : "true"}))
+        resp.mimetype = "application/json"
+        return resp
 
 @app.route("/record", methods=["POST"])
 @jsonp

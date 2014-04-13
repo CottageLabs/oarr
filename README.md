@@ -315,17 +315,26 @@ Send a full registry object to the registry.  This will have the following effec
 * If the above tests are satisfied, and new record will be created in the registry
 * If an admin record is provided, only the inner object represented by the <third party name> which matches the authenticated account will be imported
 
-Returns the location of the created resource in the Location HTTP header, and also responds with a body document as follows:
+On failure, returns the relevant HTTP status code error.  On success, returns status code 201 with the location of the created resource in the HTTP Location header, with the body content:
 
     {
         "success" : "true"
-        "id" : "<identifier of new record created>",
+        "id" : "<opaque identifier of new record created>",
         "location" : "<url of new record>"
     }
 
 ### Record Update (Read-Write)
 
     POST /record/<id> [registry object]
+
+The registry object is structured as follows:
+
+    {
+        "register" : { <registry object> },
+        "admin" : {
+            "<third party name>" : {<third party object>}
+        }
+    }
 
 Send a full or partial registry object to the registry.  This will have the following effects:
 
@@ -336,17 +345,34 @@ Send a full or partial registry object to the registry.  This will have the foll
 * Any fields which are not mentioned will be left as-is
 * The old version of the record will be stored
 
+On failure, returns the relevant HTTP status code error.  On success, returns status code 200 with the body content:
+
+    { "success" : "true" }
+
 NOTE: merge of hierarchical records is very complex, so we apply a constraint here: the merge will only happen at the root of the "register" field in the object, and each incoming field will replace the existing field of the same name.  For example, if only the "metadata" field is provided, then all other data in the existing "register" object will remian untouched, but the "metadata" field will be entirely replaced with the incoming one.
 
 .
 
     PUT /record/<id> [registry object]
 
+The registry object is structured as follows:
+
+    {
+        "register" : { <registry object> },
+        "admin" : {
+            "<third party name>" : {<third party object>}
+        }
+    }
+
 Send a replacement registry object to the registry.  This will have the following effects:
 
 * If the third party does not have the right to access the registry, the request will be rejected
 * All fields in the object which are considered to be part of the registry will be completely replaced.  This will not affect third-party specific aspects of the record, or statistics
 * The old version of the record will be stored
+
+On failure, returns the relevant HTTP status code error.  On success, returns status code 200 with the body content:
+
+    { "success" : "true" }
 
 The third party may use this method to remove data from the object, by sending a replacement object with fewer fields to replace the existing one.
 

@@ -59,7 +59,8 @@ class RegistryAPI(object):
         # prune the third party account data if necessary
         cls._prune_third_party(account, new_register)
         
-        # merge the new register into the record and save
+        # snapshot, then merge the new register into the record and save
+        record.snapshot()
         record.merge_register(new_register)
         record.save()
     
@@ -76,8 +77,20 @@ class RegistryAPI(object):
         # prune the third party account data if necessary
         cls._prune_third_party(account, new_register)
         
-        # replace the register and save
+        # snapshot, then replace the register and save
+        record.snapshot()
         record.replace_register(new_register)
+        record.save()
+    
+    @classmethod
+    def delete_register(cls, account, record):
+        # check permissions on the account
+        if not account.registry_access:
+            raise AuthorisationException("This user account does not have permission to delete objects from the registry")
+        
+        # snapshot and then delete the registry object
+        record.snapshot()
+        record.soft_delete()
         record.save()
     
     @classmethod

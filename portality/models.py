@@ -1,6 +1,7 @@
 from portality import dao, schema
 from flask.ext.login import UserMixin
 from copy import deepcopy
+from datetime import datetime
 
 class ModelException(Exception):
     pass
@@ -126,7 +127,7 @@ class Register(dao.RegisterDAO):
     }
     
     _register_schema = {
-        "fields" : ["replaces", "isreplacedby", "operational_status"],
+        "fields" : ["replaces", "isreplacedby", "operational_status", "deleted"],
         "lists" : ["metadata", "software", "contact", "organisation", "policy", "api", "integration"],
         "list_entries" : {
             "metadata" : {
@@ -314,6 +315,8 @@ class Register(dao.RegisterDAO):
     
     @register.setter
     def register(self, reg):
+        if not self._validate_register(reg):
+            raise ModelException("Unable to set new register as it is not schema valid")
         self.data["register"] = reg
     
     def set_admin(self, third_party, record):
@@ -354,6 +357,24 @@ class Register(dao.RegisterDAO):
         for k, v in admin.iteritems():
             self.data["admin"][k] = deepcopy(v)
     
+    def soft_delete(self):
+        dr = {"deleted" : datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")}
+        self.register = dr
+    
+    def snapshot(self, write=True):
+        h = deepcopy(self.data)
+        if "id" in h:
+            h["about"] = h["id"]
+            del h["id"]
+        if "created_date" in h:
+            del h["created_date"]
+        if "last_updated" in h:
+            del h["last_updated"]
+        hist = History(h)
+        if write:
+            hist.save()
+        return hist
+    
     def _full_validate(self, reg):
         # validate the overall structure of the top level elements
         root_valid = self._validate_root(reg)
@@ -384,17 +405,13 @@ class Register(dao.RegisterDAO):
         return False
     
 
-class History(dao.HistoryDAO, Register):
+class History(dao.HistoryDAO):
     """
     {
         "ver" : "<version number for the record>",
         "about" : "<opaque id of the repository record it is about>"
+        ... other register stuff ...
     }
-    
-    This inherits from Register.
-    
-    Left-to-right search of multiple parents means the HistoryDAO must be left-most to ensure that
-    the correct DAO methods are called.
     """
     
     @property

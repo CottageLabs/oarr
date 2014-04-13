@@ -3,6 +3,7 @@
 from unittest import TestCase
 import requests, json, time
 from portality import models
+from datetime import datetime
 
 BASE_URL = "http://localhost:5001/"
 AUTH_TOKEN_1 = "feaf5347e4e94fe2b45cc51976879648"
@@ -584,10 +585,89 @@ class TestIntegration(TestCase):
         assert j.get("admin", {}).get("test1", {}).get("otherkey") == "some value"
         assert j.get("admin", {}).get("test3", {}).get("myadmin") == "hereitis"
     
+    ##########################################################
+    ## Tests for deleting a register object
+    ##########################################################
     
+    def test_05_01_delete(self):
+        n = datetime.now()
+        time.sleep(1)
+        
+        # create the base version
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 3",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ],
+                "api" : [
+                    {
+                        "api_type" : "oai-pmh",
+                        "version" : "2.0"
+                    }
+                ],
+            },
+            "admin" : {
+                "test1" : {
+                    "mykey" : "my value",
+                    "otherkey" : "some value"
+                }
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        loc = resp.headers["Location"]
+        
+        # issue the delete request
+        resp2 = requests.delete(loc + "?api_key=" + AUTH_TOKEN_1)
+        assert resp2.status_code == 200
+        
+        j = resp2.json()
+        assert j.get("success") == "true"
+        
+        resp3 = requests.get(loc)
+        j = resp3.json()
+        assert j.get("register", {}).get("deleted") is not None
+        
+        d = j.get("register", {}).get("deleted")
+        dt = datetime.strptime(d, "%Y-%m-%dT%H:%M:%SZ")
+        assert dt >= n, (dt, n)
     
-    
-    
+    def test_05_02_delete_fail(self):
+        # create the base version
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 3",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ],
+                "api" : [
+                    {
+                        "api_type" : "oai-pmh",
+                        "version" : "2.0"
+                    }
+                ],
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        loc = resp.headers["Location"]
+        
+        # issue the delete request
+        resp2 = requests.delete(loc + "?api_key=" + AUTH_TOKEN_2)
+        assert resp2.status_code == 401
     
     
     

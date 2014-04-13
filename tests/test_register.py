@@ -1,8 +1,11 @@
 from unittest import TestCase
 from portality import models
 from copy import deepcopy
+from datetime import datetime
+import time
 
 _example1 = {
+    "id" : "1234",
     "register": {
         "organisation": [
             {
@@ -119,6 +122,28 @@ _example2 = {
     }
 }
 
+_example3 = {
+    "id" : "1234",
+    "register": {
+        "metadata": [
+            {
+                "lang": "en",
+                "default": True,
+                "record": {
+                    "name": "DENISON Digital Resource Commons: Denison Virtual Earth Material Gallery",
+                    "language": ["en"],
+                    "url": "http://cdm15963.contentdm.oclc.org/cdm/landingpage/collection/p15963coll37",
+                }
+            }
+        ]
+    },
+    "admin" : {
+        "tp" : {
+            "some_key" : "some value"
+        }
+    }
+}
+
 class TestSchema(TestCase):
 
     def setUp(self):
@@ -149,7 +174,7 @@ class TestSchema(TestCase):
         assert "api" in register
         assert register.get("metadata", [{}])[0].get("record", {}).get("name") == "e-publications@RCSI"
         
-        reg.replace_register(deepcopy(_example1.get("register")))
+        reg.replace_register(deepcopy(_example1))
         
         register = reg.register
         assert "api" not in register
@@ -162,9 +187,38 @@ class TestSchema(TestCase):
         assert "api" in register
         assert register.get("metadata", [{}])[0].get("record", {}).get("name") == "e-publications@RCSI"
         
-        reg.merge_register(deepcopy(_example1.get("register")))
+        reg.merge_register(deepcopy(_example1))
         
         register = reg.register
         assert "api" in register
         assert register.get("metadata", [{}])[0].get("record", {}).get("name") == "DENISON Digital Resource Commons: Denison Virtual Earth Material Gallery"
+    
+    def test_04_snapshot(self):
+        reg = models.Register(_example1)
+        hist = reg.snapshot(write=False)
+        
+        assert "id" not in hist.data # we haven't saved it yet
+        assert hist.data.get("about") == "1234" # the original id
+        assert hist.data.get("register") is not None
+        rec = hist.data.get("register")
+        assert rec.get("metadata", [{}])[0].get("record", {}).get("name") == "DENISON Digital Resource Commons: Denison Virtual Earth Material Gallery"
+    
+    def test_05_soft_delete(self):
+        n = datetime.now()
+        time.sleep(1)
+        
+        reg = models.Register(_example3)
+        reg.soft_delete()
+        rec = reg.register
+        
+        assert rec.get("deleted") is not None # record marked as deleted
+        assert "metadata" not in rec # metadata has gone
+        assert reg.data.get("admin", {}).get("tp", {}).get("some_key") == "some value" # admin data remains
+        
+        d = rec.get("deleted")
+        dt = datetime.strptime(d, "%Y-%m-%dT%H:%M:%SZ")
+        
+        assert dt >= n, (dt, n)
+        
+        
 
