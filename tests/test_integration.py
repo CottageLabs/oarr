@@ -1,5 +1,3 @@
-# TODO: this is where we actively fire stuff at the API, and check that it works
-
 from unittest import TestCase
 import requests, json, time
 from portality import models
@@ -669,12 +667,275 @@ class TestIntegration(TestCase):
         resp2 = requests.delete(loc + "?api_key=" + AUTH_TOKEN_2)
         assert resp2.status_code == 401
     
+    ##########################################################
+    ## Tests on retrieving histories
+    ##########################################################
     
+    def test_06_01_no_history(self):
+        # create a record
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        loc = resp.headers["location"]
+        
+        # there should be no history entry for the record, as it is brand new
+        resp2 = requests.get(loc + "/history")
+        assert resp2.status_code == 404
     
+    def test_06_02_merge_history(self):
+        # create the base version
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 3",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ],
+                "api" : [
+                    {
+                        "api_type" : "oai-pmh",
+                        "version" : "2.0"
+                    }
+                ],
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        loc = resp.headers["Location"]
+        j = resp.json()
+        id = j.get("id")
+        assert id is not None
+        
+        # now send the replacement
+        reg2 = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 4",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ],
+                "software" : [
+                    {
+                        "name" : "DSpace",
+                        "version" : "2.0",
+                        "url" : "http://www.dspace.org/2.0"
+                    }
+                ]
+            }
+        }
+        resp2 = requests.post(loc + "?api_key=" + AUTH_TOKEN_1, json.dumps(reg2))
+        
+        # let the index catch up
+        time.sleep(2)
+        
+        # request the history
+        resp3 = requests.get(loc + "/history")
+        j = resp3.json()
+        
+        assert len(j) == 1
+        assert j[0].get("about") == id
+        assert j[0].get("register", {}).get("api", [{}])[0].get("api_type") == "oai-pmh", j[0].get("register", {}).get("api", [{}])[0].get("api_type")
+        assert "software" not in j[0].get("register", {"software" : None})
+        
+    def test_06_03_replace_history(self):
+        # create the base version
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 3",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ],
+                "api" : [
+                    {
+                        "api_type" : "oai-pmh",
+                        "version" : "2.0"
+                    }
+                ],
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        loc = resp.headers["Location"]
+        j = resp.json()
+        id = j.get("id")
+        assert id is not None
+        
+        # now send the replacement
+        reg2 = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 4",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ],
+                "software" : [
+                    {
+                        "name" : "DSpace",
+                        "version" : "2.0",
+                        "url" : "http://www.dspace.org/2.0"
+                    }
+                ]
+            }
+        }
+        resp = requests.put(loc + "?api_key=" + AUTH_TOKEN_1, json.dumps(reg2))
+        
+        # allow the index time to refresh
+        time.sleep(2)
+        
+        # request the history
+        ret = requests.get(loc + "/history")
+        j = ret.json()
+        
+        assert len(j) == 1
+        assert j[0].get("about") == id
+        assert j[0].get("register", {}).get("api", [{}])[0].get("api_type") == "oai-pmh", j[0].get("register", {}).get("api", [{}])[0].get("api_type")
+        assert "software" not in j[0].get("register", {"software" : None})
     
-    
-    
-    
+    def test_06_04_delete_history(self):
+        # create the base version
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 3",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            },
+            "admin" : {
+                "test1" : {
+                    "mykey" : "my value",
+                    "otherkey" : "some value"
+                }
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        loc = resp.headers["Location"]
+        j = resp.json()
+        id = j.get("id")
+        assert id is not None
+        
+        # issue the delete request
+        resp2 = requests.delete(loc + "?api_key=" + AUTH_TOKEN_1)
+        
+        # give the index a moment to catch up
+        time.sleep(2)
+        
+        # request the history
+        ret = requests.get(loc + "/history")
+        j = ret.json()
+        
+        assert len(j) == 1
+        assert j[0].get("about") == id
+        assert j[0].get("admin", {}).get("test1", {}).get("mykey") == "my value"
+        
+    def test_06_05_multi_history(self):
+        # create the base version
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 3",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        loc = resp.headers["Location"]
+        j = resp.json()
+        id = j.get("id")
+        
+        # so that there's measurable difference in the timestamps
+        time.sleep(1)
+        
+        # now send the replacement
+        reg2 = {
+            "register" : {
+                "software" : [
+                    {
+                        "name" : "DSpace",
+                        "version" : "2.0",
+                        "url" : "http://www.dspace.org/2.0"
+                    }
+                ]
+            }
+        }
+        resp2 = requests.post(loc + "?api_key=" + AUTH_TOKEN_1, json.dumps(reg2))
+        
+        # so that there's measurable difference in the timestamps
+        time.sleep(1)
+        
+        # issue the delete request
+        resp3 = requests.delete(loc + "?api_key=" + AUTH_TOKEN_1)
+        
+        # let the index catch up
+        time.sleep(2)
+        
+        # request the history
+        resp4 = requests.get(loc + "/history")
+        j = resp4.json()
+        
+        # we should have two entries in the history table for this object
+        assert len(j) == 2
+        
+        # check that the objects are date ordered
+        newest = j[0]
+        oldest = j[1]
+        nd = datetime.strptime(newest.get("last_updated"), "%Y-%m-%dT%H:%M:%SZ")
+        od = datetime.strptime(oldest.get("last_updated"), "%Y-%m-%dT%H:%M:%SZ")
+        assert nd > od, (nd, od)
+        
+        assert oldest.get("register", {}).get("metadata", [{}])[0].get("record", {}).get("name") == "My Repo 3"
+        assert "software" not in oldest.get("register", {"software" : {}})
+        
+        assert newest.get("register", {}).get("metadata", [{}])[0].get("record", {}).get("name") == "My Repo 3"
+        assert newest.get("register", {}).get("software", [{}])[0].get("name") == "DSpace"
+        
     
     
     

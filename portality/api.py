@@ -23,6 +23,10 @@ class RegistryAPI(object):
         return es_results
     
     @classmethod
+    def get_history(cls, record_id, from_date=None, until_date=None):
+        return models.History.list_history(record_id, from_date=from_date, until_date=until_date)
+    
+    @classmethod
     def get_statistics(cls, record_id, from_date=None, until_date=None, provider=None, stat_type=None):
         return models.Statistics.list_statistics(record_id, from_date=from_date, until_date=until_date, provider=provider, stat_type=stat_type)
     

@@ -251,6 +251,17 @@ API usage should be logged for statistical analysis at a later date.
 
 Get the whole record for the registry entry with the given ID (will contain register and admin data)
 
+### Record History (Read-Only)
+
+    GET /record/<id>/history
+
+allowed params:
+
+    since=<date to provide changes from>
+    until=<date to provide changes until>
+
+Get a list of record objects for records which have represented this repository which fall in between the provided dates (warning: could be large).  This is effectively a full change history for a repository record.  Objects are ordered in descending date order.
+
 ### Discovery (Read-Only)
 
     GET /query?<params>
@@ -299,13 +310,19 @@ This lists all of the statistical events which conform to the parameters
 
     POST /record [registry object]
 
-The registry object is structured as follows:
+The registry object can be structured as follows (including admin data):
 
     {
         "register" : { <registry object> },
         "admin" : {
             "<third party name>" : {<third party object>}
         }
+    }
+
+or in a simplified form (without any admin data):
+
+    {
+        <registry object>
     }
 
 Send a full registry object to the registry.  This will have the following effects:
@@ -327,13 +344,19 @@ On failure, returns the relevant HTTP status code error.  On success, returns st
 
     POST /record/<id> [registry object]
 
-The registry object is structured as follows:
+The registry object can be structured as follows (including admin data):
 
     {
         "register" : { <registry object> },
         "admin" : {
             "<third party name>" : {<third party object>}
         }
+    }
+
+or in a simplified form (without any admin data):
+
+    {
+        <registry object>
     }
 
 Send a full or partial registry object to the registry.  This will have the following effects:
@@ -355,13 +378,19 @@ NOTE: merge of hierarchical records is very complex, so we apply a constraint he
 
     PUT /record/<id> [registry object]
 
-The registry object is structured as follows:
+The registry object can be structured as follows (including admin data):
 
     {
         "register" : { <registry object> },
         "admin" : {
             "<third party name>" : {<third party object>}
         }
+    }
+
+or in a simplified form (without any admin data):
+
+    {
+        <registry object>
     }
 
 Send a replacement registry object to the registry.  This will have the following effects:
@@ -384,8 +413,12 @@ Send a request to remove the registry object.  This will have the following effe
 
 * If the third party does not have the right to access the registry, the request will be rejected
 * The registry object will have all of its fields removed, but this will not affect third party data or statistics data
-* The registry object will be marked as "withdrawn" until such time as new fields are added.  This provides a tombstone for deleted records.
+* The registry object will be marked as "deleted" (with a timestamp) until such time as a replacement record is added.  This provides a tombstone for deleted records.
 * The old version of the record will be stored
+
+On failure, returns the relevant HTTP status code error.  On success, returns status code 200 with the body content:
+
+    { "success" : "true" }
 
 .
 

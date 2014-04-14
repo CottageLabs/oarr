@@ -94,12 +94,28 @@ def stats(record_id):
         # authenticated/authorised
         pass
 
-@app.route("/record/<record_id>/admin", methods="PUT")
+@app.route("/record/<record_id>/admin", methods=["PUT"])
 @jsonp
 def admin(record_id):
     # replace an existing admin record
     # authenticated/authorised
     pass
+
+@app.route("/record/<record_id>/history", methods=["GET"])
+@jsonp
+def history(record_id):
+    # get the history of an object
+    from_date = request.values.get("from") # <date to get the history stats from>
+    until_date = request.values.get("until") # <date to provide history until>
+    
+    h = RegistryAPI.get_history(record_id, from_date=from_date, until_date=until_date)
+    if h is None or len(h) == 0:
+        abort(404)
+    
+    # return a json response
+    resp = make_response(json.dumps(h))
+    resp.mimetype = "application/json"
+    return resp
 
 @app.route("/record/<record_id>", methods=["GET", "POST", "PUT", "DELETE"])
 @jsonp

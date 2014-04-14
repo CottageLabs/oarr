@@ -333,6 +333,11 @@ class Register(dao.RegisterDAO):
         if not self._full_validate(new_reg):
             raise ModelException("Unable to merge as new register is not schema valid")
         
+        # check the incoming register is not deleted
+        isdel = new_reg.get("register", {}).get("deleted")
+        if isdel:
+            raise ModelException("New register object is marked as deleted - cannot merge")
+        
         # merge the top level elements in the register
         register = new_reg.get("register", {})
         for k, v in register.iteritems():
@@ -346,6 +351,11 @@ class Register(dao.RegisterDAO):
     def replace_register(self, new_reg):
         if not self._full_validate(new_reg):
             raise ModelException("Replacement register is not schema valid")
+        
+        # check the incoming register is not deleted
+        isdel = new_reg.get("register", {}).get("deleted")
+        if isdel:
+            raise ModelException("New register object is marked as deleted - cannot replace")
         
         # overwite the register wholesale
         nr = new_reg.get("register")

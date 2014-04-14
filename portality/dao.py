@@ -34,6 +34,8 @@ class AccountQuery(object):
 class AccountDAOException(Exception):
     pass
 
+
+
 class RegisterDAO(esprit.dao.DomainObject):
     __type__ = "register"
     __conn__ = esprit.raw.Connection(app.config['ELASTIC_SEARCH_HOST'], app.config['ELASTIC_SEARCH_DB'])
@@ -41,6 +43,8 @@ class RegisterDAO(esprit.dao.DomainObject):
     def save(self, conn=None, created=True, updated=True):
         # just a shim in case we want to do any tasks before doing the actual save
         super(RegisterDAO, self).save(conn=conn, created=created, updated=updated)
+
+
 
 class StatisticsDAO(esprit.dao.DomainObject):
     __type__ = "statistics"
@@ -57,13 +61,86 @@ class StatisticsDAO(esprit.dao.DomainObject):
         # just a shim in case we want to do any tasks before doing the actual save
         super(StatisticsDAO, self).save(conn=conn, created=created, updated=updated)
 
+class StatsQuery(object):
+    def __init__(self, record_id=None, from_date=None, until_date=None, provider=None, stat_type=None):
+        self.record_id = record_id
+        self.from_date = from_date
+        self.until_date = until_date
+        self.provider = provider
+        self.stat_type = stat_type
+    
+    def query(self):
+        q = {"query" : {"bool" : {"must" : []}}}
+        
+        if self.record_id is not None:
+            iq = {"term" : {"about.exact" : self.record_id}}
+            q["query"]["bool"]["must"].append(iq)
+        
+        if self.from_date is not None or self.until_date is not None:
+            rq = {"range" : {"last_updated" : {}}}
+            if self.from_date:
+                rq["range"]["last_updated"]["gte"] = self.from_date
+            if self.until_date:
+                rq["range"]["last_updated"]["lte"] = self.until_date
+            q["query"]["bool"]["must"].append(rq)
+        
+        if self.provider is not None:
+            pq = {"term" : {"third_party.exact" : self.provider}}
+            q["query"]["bool"]["must"].append(pq)
+        
+        if self.stat_type is not None:
+            sq = {"term" : {"type.exact" : self.stat_type}}
+            q["query"]["bool"]["must"].append(sq)
+        
+        q["size"] = 10000
+        q["sort"] = {"last_updated" : {"order" : "desc"}}
+        
+        return q
+
+
+
 class HistoryDAO(esprit.dao.DomainObject):
     __type__ = "history"
     __conn__ = esprit.raw.Connection(app.config['ELASTIC_SEARCH_HOST'], app.config['ELASTIC_SEARCH_DB'])
     
+    @classmethod
+    def list_history(cls, about, from_date=None, until_date=None):
+        hist_query = HistoryQuery(about, from_date, until_date)
+        es_results = cls.query(q=hist_query.query())
+        h = esprit.raw.unpack_json_result(es_results)
+        return h
+    
     def save(self, conn=None, created=True, updated=True):
         # just a shim in case we want to do any tasks before doing the actual save
         super(HistoryDAO, self).save(conn=conn, created=created, updated=updated)
+
+class HistoryQuery(object):
+    def __init__(self, about, from_date=None, until_date=None):
+        self.about = about
+        self.from_date = from_date
+        self.until_date = until_date
+    
+    def query(self):
+        q = {"query" : {"bool" : {"must" : []}}}
+        
+        if self.about is not None:
+            aq = {"term" : {"about.exact" : self.about}}
+            q["query"]["bool"]["must"].append(aq)
+        
+        if self.from_date is not None or self.until_date is not None:
+            rq = {"range" : {"last_updated" : {}}}
+            if self.from_date:
+                rq["range"]["last_updated"]["gte"] = self.from_date
+            if self.until_date:
+                rq["range"]["last_updated"]["lte"] = self.until_date
+            q["query"]["bool"]["must"].append(rq)
+        
+        q["sort"] = {"last_updated" : {"order" : "desc"}}
+        
+        return q
+
+
+
 
 class SearchQuery(object):
     def __init__(self, full_query=None, query_string=None, fields=None, 
@@ -113,41 +190,7 @@ class SearchQuery(object):
         
         return q
 
-class StatsQuery(object):
-    def __init__(self, record_id=None, from_date=None, until_date=None, provider=None, stat_type=None):
-        self.record_id = record_id
-        self.from_date = from_date
-        self.until_date = until_date
-        self.provider = provider
-        self.stat_type = stat_type
-    
-    def query(self):
-        q = {"query" : {"bool" : {"must" : []}}}
-        
-        if self.record_id is not None:
-            iq = {"term" : {"about.exact" : self.record_id}}
-            q["query"]["bool"]["must"].append(iq)
-        
-        if self.from_date is not None or self.until_date is not None:
-            rq = {"range" : {"last_updated" : {}}}
-            if self.from_date:
-                rq["range"]["last_updated"]["gte"] = self.from_date
-            if self.until_date:
-                rq["range"]["last_updated"]["lte"] = self.until_date
-            q["query"]["bool"]["must"].append(rq)
-        
-        if self.provider is not None:
-            pq = {"term" : {"third_party.exact" : self.provider}}
-            q["query"]["bool"]["must"].append(pq)
-        
-        if self.stat_type is not None:
-            sq = {"term" : {"type.exact" : self.stat_type}}
-            q["query"]["bool"]["must"].append(sq)
-        
-        q["size"] = 10000
-        q["sort"] = {"last_updated" : {"order" : "desc"}}
-        
-        return q
+
 
 
 
