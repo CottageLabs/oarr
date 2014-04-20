@@ -1052,6 +1052,42 @@ class TestIntegration(TestCase):
         
         assert len(list(set(id2))) == 4
     
+    def test_07_03_delete_stat(self):
+        # create the base version
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 3",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_4, json.dumps(reg))
+        loc = resp.headers["Location"]
+        
+        # create the statistic
+        stat = {
+            "value" : "27",
+            "type" : "record_count"
+        }
+        resp = requests.post(loc + "/stats?api_key=" + AUTH_TOKEN_4, json.dumps(stat))
+        sl = resp.headers["Location"]
+        
+        # let the index catch up
+        time.sleep(2)
+        
+        # issue a delete request
+        resp3 = requests.delete(sl + "?api_key=" + AUTH_TOKEN_4)
+        assert resp3.status_code == 200
+        j = resp3.json()
+        assert j.get("success") == "true"
     
     
     

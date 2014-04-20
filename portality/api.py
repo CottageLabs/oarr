@@ -130,7 +130,19 @@ class RegistryAPI(object):
         stat.save()
         
         return stat.id
+    
+    @classmethod
+    def delete_statistic(cls, account, stat, force=False):
+        # check permissions on the account
+        if not account.statistics_access:
+            raise AuthorisationException("This user account does not have permission to delete statistics from the registry")
         
+        if account.name != stat.third_party and not force:
+            raise AuthorisationException("This user does not own the statistic so cannot delete it")
+        
+        # delete the stat from the index
+        stat.delete()
+    
     @classmethod
     def _prune_third_party(cls, account, register):
         if "admin" not in register:

@@ -71,8 +71,37 @@ def root():
 @app.route("/record/<record_id>/stat/<stat_id>", methods=["DELETE"])
 def stat(record_id, stat_id):
     # delete the identified statistic
-    # authenticated/authorised
-    pass
+    # check that we are authorised
+    apikey = request.values.get("api_key")
+    acc = models.Account.pull_by_auth_token(apikey)
+    if acc is None:
+        abort(401)
+    if not acc.statistics_access:
+        abort(401)
+    
+    # check that the record exists
+    reg = models.Register.pull(record_id)
+    if reg is None:
+        print "no reg"
+        abort(404)
+        
+    # check that the stat being removed exists
+    stat = models.Statistics.pull(stat_id)
+    if stat is None:
+        print "no stat"
+        abort(404)
+    
+    # check the account owns the stat
+    if stat.third_party != acc.name:
+        abort(401)
+    
+    # if we get here, delete can go ahead
+    RegistryAPI.delete_statistic(acc, stat)
+    
+    # return a json response
+    resp = make_response(json.dumps({"success" : "true"}))
+    resp.mimetype = "application/json"
+    return resp
 
 @app.route("/record/<record_id>/stats", methods=["GET", "POST"])
 def stats(record_id):
