@@ -239,7 +239,7 @@ The third party account model describes the information we need to know about an
 * Content Types
     * fulltext, metadata only, research archive, data archive, etc.
 
-## API
+## Read Only API
 
 All interactions with the registry should be via the API, and as many of the registry's features should be implemented as third parties which consume the API.  The API will be natively JSON, with other formats made available if necessary and time permitting.
 
@@ -305,6 +305,13 @@ allowed params:
     type=<type of statistic to return>
 
 This lists all of the statistical events which conform to the parameters
+
+## Read-Write API
+
+All calls to the Read-Write api must include your api_key as a query argument.  e.g.
+
+    POST /record?api_key=oiquroiywqteoiqu823 [registry object]
+
 
 ### Record Create (Read-Write)
 
@@ -427,12 +434,31 @@ On failure, returns the relevant HTTP status code error.  On success, returns st
 
     POST /record/<id>/stats [statistic record]
 
+A statistic record is as follows:
+
+    {
+        "value" : <the numerical statistic, whatever it is>,
+        "type" : "<the name of the type of statistic>",
+        "date" : "<date the statistic was generated>",
+    }
+
 Send a new statistic to the registry from a third party which is calculating them.  This will have the following effects:
 
 * If the third party does not have the right to access statistics, this request will be rejected
 * The statistic will be added to the registry object, attributed to the third party
 * The statistic will receive an ID which will be returned to the client in the response
 
+If the "date" field is not provided, the current date will be used.  Dates should be in the form YYYY-mm-ddTHH:MM:SSZ or YYYY-mm-dd or they will be rejected.
+
+The "value" field should be suitable to be converted to a floating point number: it may be a string with a numeric form, an integer or a floating point number.
+
+On failure, returns the relevant HTTP status code error.  On success, returns status code 201 with the location of the created resource in the HTTP Location header, with the body content:
+
+    {
+        "success" : "true"
+        "id" : "<opaque identifier of new statistic created>",
+        "location" : "<url of new statistic>"
+    }
 .
 
     DELETE /record/<id>/stat/<stat_id>

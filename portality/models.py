@@ -118,7 +118,7 @@ class Statistics(dao.StatisticsDAO):
     @property
     def third_party(self): return self.data.get("third_party")
     @third_party.setter
-    def third_party(self, tp): self.data["third_party"] = third_party
+    def third_party(self, tp): self.data["third_party"] = tp
 
 class Register(dao.RegisterDAO):
     _root_schema = {
@@ -371,7 +371,7 @@ class Register(dao.RegisterDAO):
         dr = {"deleted" : datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")}
         self.register = dr
     
-    def snapshot(self, write=True):
+    def snapshot(self, account=None, write=True):
         h = deepcopy(self.data)
         if "id" in h:
             h["about"] = h["id"]
@@ -380,6 +380,8 @@ class Register(dao.RegisterDAO):
             del h["created_date"]
         if "last_updated" in h:
             del h["last_updated"]
+        if account is not None:
+            h["triggered_by_account"] = account.name
         hist = History(h)
         if write:
             hist.save()

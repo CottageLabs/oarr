@@ -16,6 +16,17 @@ class AccountDAO(esprit.dao.DomainObject):
             raise AccountDAOException("more than one account with that auth_token")
         return cls(accs[0])
     
+    @classmethod
+    def pull_by_name(cls, name):
+        q = AccountQuery(name=name)
+        res = cls.query(q=q.query())
+        accs = esprit.raw.unpack_json_result(res)
+        if len(accs) == 0 or accs is None:
+            return None
+        if len(accs) > 1:
+            raise AccountDAOException("more than one account with that name")
+        return cls(accs[0])
+    
     def save(self, conn=None, created=True, updated=True):
         # just a shim in case we want to do any tasks before doing the actual save
         super(AccountDAO, self).save(conn=conn, created=created, updated=updated)
@@ -77,11 +88,11 @@ class StatsQuery(object):
             q["query"]["bool"]["must"].append(iq)
         
         if self.from_date is not None or self.until_date is not None:
-            rq = {"range" : {"last_updated" : {}}}
+            rq = {"range" : {"date" : {}}}
             if self.from_date:
-                rq["range"]["last_updated"]["gte"] = self.from_date
+                rq["range"]["date"]["gte"] = self.from_date
             if self.until_date:
-                rq["range"]["last_updated"]["lte"] = self.until_date
+                rq["range"]["date"]["lte"] = self.until_date
             q["query"]["bool"]["must"].append(rq)
         
         if self.provider is not None:
@@ -93,7 +104,7 @@ class StatsQuery(object):
             q["query"]["bool"]["must"].append(sq)
         
         q["size"] = 10000
-        q["sort"] = {"last_updated" : {"order" : "desc"}}
+        q["sort"] = {"date" : {"order" : "desc"}}
         
         return q
 

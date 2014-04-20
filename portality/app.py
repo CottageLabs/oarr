@@ -6,7 +6,7 @@ from flask.ext.login import login_user, current_user
 import portality.models as models
 from portality.core import app#, login_manager
 from portality import settings
-from portality.api import RegistryAPI
+from portality.api import RegistryAPI, APIException
 
 import json
 from datetime import datetime
@@ -91,8 +91,36 @@ def stats(record_id):
         
     elif request.method == "POST":
         # add a new statistic
-        # authenticated/authorised
-        pass
+        # check that we are authorised
+        apikey = request.values.get("api_key")
+        acc = models.Account.pull_by_auth_token(apikey)
+        if acc is None:
+            abort(401)
+        if not acc.statistics_access:
+            abort(401)
+        
+        # check that the record being updated exists
+        reg = models.Register.pull(record_id)
+        if reg is None:
+            abort(404)
+        
+        # add the new statistics
+        try:
+            stat = json.loads(request.data)
+        except:
+            abort(400)
+        
+        try:
+            stat_id = RegistryAPI.add_statistic(acc, reg, stat)
+        except APIException:
+            abort(400)
+        
+        # return a json response
+        resp = make_response(json.dumps({"success" : "true", "id" : stat_id, "location" : "/record/" + record_id + "/stat/" + stat_id}))
+        resp.headers["Location"] = "/record/" + record_id + "/stat/" + stat_id
+        resp.mimetype = "application/json"
+        resp.status_code = 201
+        return resp
 
 @app.route("/record/<record_id>/admin", methods=["PUT"])
 @jsonp

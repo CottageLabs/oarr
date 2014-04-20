@@ -202,6 +202,12 @@ class TestSchema(TestCase):
         assert hist.data.get("register") is not None
         rec = hist.data.get("register")
         assert rec.get("metadata", [{}])[0].get("record", {}).get("name") == "DENISON Digital Resource Commons: Denison Virtual Earth Material Gallery"
+        
+        reg = models.Register(_example1)
+        acc = models.Account({"name" : "testing"})
+        hist = reg.snapshot(account=acc, write=False)
+        
+        assert hist.data.get("triggered_by_account") == "testing"
     
     def test_05_soft_delete(self):
         n = datetime.now()

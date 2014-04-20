@@ -15,7 +15,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     if not args.name:
-        print "Please specify a third party organisation name with the -n option"
+        print "Please specify a unique third party organisation name with the -n option"
         exit()
     
     name = args.name
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     
     token = uuid.uuid4().hex
     
-    acc = Account.pull(name)
+    acc = Account.pull_by_name(name)
     if not acc:
         acc = Account()
         acc.set_name(name)

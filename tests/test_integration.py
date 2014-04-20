@@ -7,6 +7,7 @@ BASE_URL = "http://localhost:5001/"
 AUTH_TOKEN_1 = "feaf5347e4e94fe2b45cc51976879648"
 AUTH_TOKEN_2 = "69013a52e8e14221b09b122b489ee87c"
 AUTH_TOKEN_3 = "135ac0e2af78475eb8a915fbbe64dff9"
+AUTH_TOKEN_4 = "b831f34f96d641ed8a8d517063b659af"
 
 class TestIntegration(TestCase):
 
@@ -14,12 +15,14 @@ class TestIntegration(TestCase):
         self._make_account("test1", True, False, False, AUTH_TOKEN_1)
         self._make_account("test2", False, False, False, AUTH_TOKEN_2)
         self._make_account("test3", True, False, False, AUTH_TOKEN_3)
+        self._make_account("test4", True, True, False, AUTH_TOKEN_4)
         models.Account.refresh()
         
     def tearDown(self):
         self._delete_account(AUTH_TOKEN_1)
         self._delete_account(AUTH_TOKEN_2)
         self._delete_account(AUTH_TOKEN_3)
+        self._delete_account(AUTH_TOKEN_4)
         models.Account.refresh()
     
     def _make_account(self, name, register, stats, admin, token):
@@ -936,10 +939,118 @@ class TestIntegration(TestCase):
         assert newest.get("register", {}).get("metadata", [{}])[0].get("record", {}).get("name") == "My Repo 3"
         assert newest.get("register", {}).get("software", [{}])[0].get("name") == "DSpace"
         
+    ##################################################
+    ## Test for creating and retrieving stats
+    ##################################################
     
+    def test_07_01_create_stat(self):
+        # create the base version
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 3",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_4, json.dumps(reg))
+        loc = resp.headers["Location"]
+        
+        # create the statistic
+        stat = {
+            "value" : "27",
+            "type" : "record_count"
+        }
+        resp = requests.post(loc + "/stats?api_key=" + AUTH_TOKEN_4, json.dumps(stat))
+        assert resp.status_code == 201
+        sl = resp.headers["Location"]
+        j = resp.json()
+        assert j["success"] == "true"
+        assert sl.endswith(j["id"])
+        assert sl.endswith(j["location"])
     
-    
-    
+    def test_07_02_create_retrieve_stats(self):
+        # create the base version
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 3",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_4, json.dumps(reg))
+        loc = resp.headers["Location"]
+        j = resp.json()
+        record_id = j.get("id")
+        
+        # create the statistics
+        stats = [
+            { "value" : "10", "type" : "record_count", "date" : "2014-01-01T12:00:00Z"},
+            { "value" : "20", "type" : "record_count", "date" : "2014-02-01"},
+            { "value" : "30", "type" : "record_count", "date" : "2014-03-01T12:00:00Z"},
+            { "value" : "50", "type" : "record_count", "date" : "2014-04-01"}
+        ]
+        
+        ids = []
+        for stat in stats:
+            resp = requests.post(loc + "/stats?api_key=" + AUTH_TOKEN_4, json.dumps(stat))
+            assert resp.status_code == 201
+            j = resp.json()
+            ids.append(j["id"])
+            time.sleep(1)
+        
+        # give the index time to catch up
+        time.sleep(1)
+        
+        # retrieve the statistics
+        resp2 = requests.get(loc + "/stats")
+        j = resp2.json()
+        
+        # check there are the right number of stats
+        assert len(j) == 4
+        
+        # - are the stats in the right order?
+        dates = [datetime.strptime(x.get("date"), "%Y-%m-%dT%H:%M:%SZ") for x in j]
+        assert dates[0] > dates[1]
+        assert dates[1] > dates[2]
+        assert dates[2] > dates[3]
+        
+        # - do the stats all have the right properties?
+        """
+        {
+            "id" : "<opaque identifier for this statistical record>",
+            "about" : "<opaque identifier for the repository>",
+            "value" : <the numerical statistic, whatever it is>,
+            "type" : "<the name of the type of statistic>",
+            "date" : "<date the statistic was generated>",
+            "third_party" : "<system id that provided the statistic>"
+        }
+        """
+        id2 = []
+        for stat in j:
+            id2.append(stat.get("id"))
+            assert stat.get("id") in ids
+            assert stat.get("about") == record_id
+            assert stat.get("value") in [10.0, 20.0, 30.0, 50.0]
+            assert stat.get("type") == "record_count"
+            assert stat.get("third_party") == "test4"
+        
+        assert len(list(set(id2))) == 4
     
     
     

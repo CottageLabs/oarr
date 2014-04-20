@@ -1,6 +1,10 @@
 from portality import models, dao
+from datetime import datetime
 
 class AuthorisationException(Exception):
+    pass
+
+class APIException(Exception):
     pass
 
 class RegistryAPI(object):
@@ -64,7 +68,7 @@ class RegistryAPI(object):
         cls._prune_third_party(account, new_register)
         
         # snapshot, then merge the new register into the record and save
-        record.snapshot()
+        record.snapshot(account=account)
         record.merge_register(new_register)
         record.save()
     
@@ -82,7 +86,7 @@ class RegistryAPI(object):
         cls._prune_third_party(account, new_register)
         
         # snapshot, then replace the register and save
-        record.snapshot()
+        record.snapshot(account=account)
         record.replace_register(new_register)
         record.save()
     
@@ -93,10 +97,40 @@ class RegistryAPI(object):
             raise AuthorisationException("This user account does not have permission to delete objects from the registry")
         
         # snapshot and then delete the registry object
-        record.snapshot()
+        record.snapshot(account=account)
         record.soft_delete()
         record.save()
     
+    @classmethod
+    def add_statistic(cls, account, record, raw_stat):
+        # check permissions on the account
+        if not account.statistics_access:
+            raise AuthorisationException("This user account does not have permission to add statistics to the registry")
+        
+        value = raw_stat.get("value")
+        type = raw_stat.get("type")
+        date = raw_stat.get("date")
+        
+        # dates must be of the right format
+        if date is None:
+            date = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+        else:
+            date = cls._normalise_date(date)
+        
+        # values must be a float
+        value = cls._numberise(value)
+        
+        # create, populate and save the statistic
+        stat = models.Statistics()
+        stat.about = record.id
+        stat.value = value
+        stat.type = type
+        stat.date = date
+        stat.third_party = account.name
+        stat.save()
+        
+        return stat.id
+        
     @classmethod
     def _prune_third_party(cls, account, register):
         if "admin" not in register:
@@ -109,5 +143,39 @@ class RegistryAPI(object):
                 remove_keys.append(key)
         for k in remove_keys:
             del register["admin"][k]
-        
-        
+    
+    @classmethod
+    def _normalise_date(cls, date):
+        try:
+            ts = datetime.strptime(date, "%Y-%m-%dT%H:%M:%SZ")
+            return date
+        except:
+            pass
+        try:
+            ts = datetime.strptime(date, "%Y-%m-%d")
+            return date + "T00:00:00Z"
+        except:
+            pass
+        raise APIException(str(date) + " is not of an acceptable format")
+
+    @classmethod
+    def _numberise(self, s):
+        try:
+            return float(s)
+        except:
+            raise APIException(str(s) + " cannot be coerced to float")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
