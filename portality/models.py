@@ -297,12 +297,9 @@ class Register(dao.RegisterDAO):
         }
     }
     """
-    # FIXME: this object is very complex, and there isn't an immediately obvious
+    # TODO: this object is very complex, and there isn't an immediately obvious
     # way in which it will be used server-side, so we should just flesh this out
     # as the functions become necessary.
-    #
-    # Probably the most important thing will be making sure that users aren't just
-    # dumping junk into it.  So some kind of schema validation, maybe.
     
     def __init__(self, raw):
         # hand to the superclass to do the basic set-up

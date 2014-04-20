@@ -8,6 +8,7 @@ AUTH_TOKEN_1 = "feaf5347e4e94fe2b45cc51976879648"
 AUTH_TOKEN_2 = "69013a52e8e14221b09b122b489ee87c"
 AUTH_TOKEN_3 = "135ac0e2af78475eb8a915fbbe64dff9"
 AUTH_TOKEN_4 = "b831f34f96d641ed8a8d517063b659af"
+AUTH_TOKEN_5 = "34eb22acfc9d4eea8e18a9a28f896426"
 
 class TestIntegration(TestCase):
 
@@ -16,6 +17,7 @@ class TestIntegration(TestCase):
         self._make_account("test2", False, False, False, AUTH_TOKEN_2)
         self._make_account("test3", True, False, False, AUTH_TOKEN_3)
         self._make_account("test4", True, True, False, AUTH_TOKEN_4)
+        self._make_account("test5", True, False, True, AUTH_TOKEN_5)
         models.Account.refresh()
         
     def tearDown(self):
@@ -23,6 +25,7 @@ class TestIntegration(TestCase):
         self._delete_account(AUTH_TOKEN_2)
         self._delete_account(AUTH_TOKEN_3)
         self._delete_account(AUTH_TOKEN_4)
+        self._delete_account(AUTH_TOKEN_5)
         models.Account.refresh()
     
     def _make_account(self, name, register, stats, admin, token):
@@ -1089,8 +1092,101 @@ class TestIntegration(TestCase):
         j = resp3.json()
         assert j.get("success") == "true"
     
+    ##################################################
+    ## Test for creating and retrieving admin data
+    ##################################################
     
+    def test_08_01_create_admin(self):
+        # create the base version
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 3",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_5, json.dumps(reg))
+        loc = resp.headers["Location"]
+        
+        admin = {
+            "akey" : "a value"
+        }
+        resp2 = requests.put(loc + "/admin?api_key=" + AUTH_TOKEN_5, json.dumps(admin))
+        
+        assert resp2.status_code == 200
+        j = resp2.json()
+        assert j.get("success") == "true"
+        
+        # give the index time to catch up
+        time.sleep(2)
+        
+        resp3 = requests.get(loc)
+        j = resp3.json()
+        assert "admin" in j
+        assert "test5" in j["admin"]
+        assert j["admin"]["test5"]["akey"] == "a value"
     
+    def test_08_02_replace_admin(self):
+        # create the base version
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 3",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_5, json.dumps(reg))
+        loc = resp.headers["Location"]
+        
+        admin = {
+            "akey" : "a value"
+        }
+        resp2 = requests.put(loc + "/admin?api_key=" + AUTH_TOKEN_5, json.dumps(admin))
+        
+        # give the index time to catch up
+        time.sleep(2)
+        
+        resp3 = requests.get(loc)
+        j = resp3.json()
+        assert "admin" in j
+        assert "test5" in j["admin"]
+        assert j["admin"]["test5"]["akey"] == "a value"
+        
+        admin2 = {
+            "justthis" : "key"
+        }
+        resp4 = requests.put(loc + "/admin?api_key=" + AUTH_TOKEN_5, json.dumps(admin2))
+        
+        assert resp4.status_code == 200
+        j = resp4.json()
+        assert j.get("success") == "true"
+        
+        # give the index time to catch up
+        time.sleep(2)
+        
+        resp5 = requests.get(loc)
+        j = resp5.json()
+        assert "admin" in j
+        assert "test5" in j["admin"]
+        assert j["admin"]["test5"]["justthis"] == "key"
+        assert "akey" not in j["admin"]["test5"]
+        
     
     
     

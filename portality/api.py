@@ -102,6 +102,16 @@ class RegistryAPI(object):
         record.save()
     
     @classmethod
+    def set_admin(cls, account, record, admin):
+        # check permissions on the account
+        if not account.admin_access:
+            raise AuthorisationException("This user account does not have permission to set admin data on the registry")
+        
+        # set the admin record
+        record.set_admin(account.name, admin)
+        record.save()
+    
+    @classmethod
     def add_statistic(cls, account, record, raw_stat):
         # check permissions on the account
         if not account.statistics_access:

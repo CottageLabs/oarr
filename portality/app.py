@@ -155,8 +155,31 @@ def stats(record_id):
 @jsonp
 def admin(record_id):
     # replace an existing admin record
-    # authenticated/authorised
-    pass
+    # check that we have admin access
+    apikey = request.values.get("api_key")
+    acc = models.Account.pull_by_auth_token(apikey)
+    if acc is None:
+        abort(401)
+    if not acc.admin_access:
+        abort(401)
+    
+    # check that the record being updated exists
+    reg = models.Register.pull(record_id)
+    if reg is None:
+        abort(404)
+    
+    # get the replacement admin object
+    try:
+        admin = json.loads(request.data)
+    except:
+        abort(400)
+    
+    RegistryAPI.set_admin(acc, reg, admin)
+    
+    # return a json response
+    resp = make_response(json.dumps({"success" : "true"}))
+    resp.mimetype = "application/json"
+    return resp
 
 @app.route("/record/<record_id>/history", methods=["GET"])
 @jsonp
