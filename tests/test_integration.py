@@ -15,7 +15,7 @@ class TestIntegration(TestCase):
     def setUp(self):
         self._make_account("test1", True, False, False, AUTH_TOKEN_1)
         self._make_account("test2", False, False, False, AUTH_TOKEN_2)
-        self._make_account("test3", True, False, False, AUTH_TOKEN_3)
+        self._make_account("test3", True, False, True, AUTH_TOKEN_3)
         self._make_account("test4", True, True, False, AUTH_TOKEN_4)
         self._make_account("test5", True, False, True, AUTH_TOKEN_5)
         models.Account.refresh()
@@ -102,7 +102,7 @@ class TestIntegration(TestCase):
             }
         }
         
-        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_5, json.dumps(reg))
         
         # aggressively test the response object
         j = resp.json()
@@ -140,7 +140,7 @@ class TestIntegration(TestCase):
         assert resp.status_code == 401
     
     def test_01_04_no_permission(self):
-        # first, without an admin record, the most simple case
+        # now a couple of ways.  First, without any register access
         reg = {
             "register" : {
                 "metadata" : [
@@ -160,6 +160,15 @@ class TestIntegration(TestCase):
         resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_2, json.dumps(reg))
         assert resp.status_code == 401
         
+        # next with register access but no admin access
+        reg["admin"] = {
+            "test1" : {
+                "one" : "two"
+            }
+        }
+        resp2 = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        assert resp.status_code == 401
+        
     def test_01_05_malformed(self):
         resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, "akdhfoiaeiq;{}")
         assert resp.status_code == 400
@@ -171,7 +180,7 @@ class TestIntegration(TestCase):
         }
         
         resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
-        assert resp.status_code == 400
+        assert resp.status_code == 400, resp.status_code
     
     ##########################################################
     # Tests for retrieving register objects
@@ -193,19 +202,19 @@ class TestIntegration(TestCase):
                 ]
             },
             "admin" : {
-                "test1" : {
+                "test5" : {
                     "some_key" : "some_value"
                 }
             }
         }
-        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_5, json.dumps(reg))
         
         loc = resp.headers["location"]
         ret = requests.get(loc)
         j = ret.json()
         
         assert j.get("register", {}).get("metadata", [{}])[0].get("record", {}).get("name") == "My Repo 2"
-        assert j.get("admin", {}).get("test1", {}).get("some_key") == "some_value"
+        assert j.get("admin", {}).get("test5", {}).get("some_key") == "some_value"
     
     ##########################################################
     ## Tests for updating/patching a register object
@@ -290,13 +299,13 @@ class TestIntegration(TestCase):
                 ]
             },
             "admin" : {
-                "test1" : {
+                "test5" : {
                     "mykey" : "my value",
                     "otherkey" : "some value"
                 }
             }
         }
-        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_5, json.dumps(reg))
         loc = resp.headers["Location"]
         
         # now send the replacement
@@ -315,12 +324,12 @@ class TestIntegration(TestCase):
                 ]
             },
             "admin" : {
-                "test1" : {
+                "test5" : {
                     "mykey" : "other value"
                 }
             }
         }
-        resp = requests.post(loc + "?api_key=" + AUTH_TOKEN_1, json.dumps(reg2))
+        resp = requests.post(loc + "?api_key=" + AUTH_TOKEN_5, json.dumps(reg2))
         
         # allow the index time to refresh
         time.sleep(2)
@@ -331,7 +340,7 @@ class TestIntegration(TestCase):
         
         # check that the admin object has been fully overwritten
         assert j.get("register", {}).get("metadata", [{}])[0].get("record", {}).get("name") == "My Repo 4"
-        assert j.get("admin", {}).get("test1", {}).get("mykey") == "other value"
+        assert j.get("admin", {}).get("test5", {}).get("mykey") == "other value"
         assert "otherkey" not in j.get("admin", {}).get("test1", {})
     
     def test_03_03_other_admin(self):
@@ -351,13 +360,13 @@ class TestIntegration(TestCase):
                 ]
             },
             "admin" : {
-                "test1" : {
+                "test5" : {
                     "mykey" : "my value",
                     "otherkey" : "some value"
                 }
             }
         }
-        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_5, json.dumps(reg))
         loc = resp.headers["Location"]
         
         # now send the replacement as a different user
@@ -376,7 +385,7 @@ class TestIntegration(TestCase):
                 ]
             },
             "admin" : {
-                "test1" : {
+                "test5" : {
                     "mykey" : "other value"
                 },
                 "test3" : {
@@ -394,8 +403,8 @@ class TestIntegration(TestCase):
         j = ret.json()
         
         # check that the foreign admin object has been ignored but your new one has been imported
-        assert j.get("admin", {}).get("test1", {}).get("mykey") == "my value", j
-        assert j.get("admin", {}).get("test1", {}).get("otherkey") == "some value"
+        assert j.get("admin", {}).get("test5", {}).get("mykey") == "my value", j
+        assert j.get("admin", {}).get("test5", {}).get("otherkey") == "some value"
         assert j.get("admin", {}).get("test3", {}).get("myadmin") == "hereitis"
     
     ##########################################################
@@ -481,13 +490,13 @@ class TestIntegration(TestCase):
                 ]
             },
             "admin" : {
-                "test1" : {
+                "test5" : {
                     "mykey" : "my value",
                     "otherkey" : "some value"
                 }
             }
         }
-        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_5, json.dumps(reg))
         loc = resp.headers["Location"]
         
         # now send the replacement
@@ -506,12 +515,12 @@ class TestIntegration(TestCase):
                 ]
             },
             "admin" : {
-                "test1" : {
+                "test5" : {
                     "mykey" : "other value"
                 }
             }
         }
-        resp = requests.put(loc + "?api_key=" + AUTH_TOKEN_1, json.dumps(reg2))
+        resp = requests.put(loc + "?api_key=" + AUTH_TOKEN_5, json.dumps(reg2))
         
         # allow the index time to refresh
         time.sleep(2)
@@ -522,7 +531,7 @@ class TestIntegration(TestCase):
         
         # check that the admin object has been fully overwritten
         assert j.get("register", {}).get("metadata", [{}])[0].get("record", {}).get("name") == "My Repo 4"
-        assert j.get("admin", {}).get("test1", {}).get("mykey") == "other value"
+        assert j.get("admin", {}).get("test5", {}).get("mykey") == "other value"
         assert "otherkey" not in j.get("admin", {}).get("test1", {})
     
     def test_04_03_other_admin(self):
@@ -542,13 +551,13 @@ class TestIntegration(TestCase):
                 ]
             },
             "admin" : {
-                "test1" : {
+                "test5" : {
                     "mykey" : "my value",
                     "otherkey" : "some value"
                 }
             }
         }
-        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_5, json.dumps(reg))
         loc = resp.headers["Location"]
         
         # now send the replacement as a different user
@@ -567,7 +576,7 @@ class TestIntegration(TestCase):
                 ]
             },
             "admin" : {
-                "test1" : {
+                "test5" : {
                     "mykey" : "other value"
                 },
                 "test3" : {
@@ -585,8 +594,8 @@ class TestIntegration(TestCase):
         j = ret.json()
         
         # check that the foreign admin object has been ignored but your new one has been imported
-        assert j.get("admin", {}).get("test1", {}).get("mykey") == "my value", j
-        assert j.get("admin", {}).get("test1", {}).get("otherkey") == "some value"
+        assert j.get("admin", {}).get("test5", {}).get("mykey") == "my value", j
+        assert j.get("admin", {}).get("test5", {}).get("otherkey") == "some value"
         assert j.get("admin", {}).get("test3", {}).get("myadmin") == "hereitis"
     
     ##########################################################
@@ -619,17 +628,17 @@ class TestIntegration(TestCase):
                 ],
             },
             "admin" : {
-                "test1" : {
+                "test5" : {
                     "mykey" : "my value",
                     "otherkey" : "some value"
                 }
             }
         }
-        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_5, json.dumps(reg))
         loc = resp.headers["Location"]
         
         # issue the delete request
-        resp2 = requests.delete(loc + "?api_key=" + AUTH_TOKEN_1)
+        resp2 = requests.delete(loc + "?api_key=" + AUTH_TOKEN_5)
         assert resp2.status_code == 200
         
         j = resp2.json()
@@ -848,20 +857,20 @@ class TestIntegration(TestCase):
                 ]
             },
             "admin" : {
-                "test1" : {
+                "test5" : {
                     "mykey" : "my value",
                     "otherkey" : "some value"
                 }
             }
         }
-        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_5, json.dumps(reg))
         loc = resp.headers["Location"]
         j = resp.json()
         id = j.get("id")
         assert id is not None
         
         # issue the delete request
-        resp2 = requests.delete(loc + "?api_key=" + AUTH_TOKEN_1)
+        resp2 = requests.delete(loc + "?api_key=" + AUTH_TOKEN_5)
         
         # give the index a moment to catch up
         time.sleep(2)
@@ -872,7 +881,7 @@ class TestIntegration(TestCase):
         
         assert len(j) == 1
         assert j[0].get("about") == id
-        assert j[0].get("admin", {}).get("test1", {}).get("mykey") == "my value"
+        assert j[0].get("admin", {}).get("test5", {}).get("mykey") == "my value"
         
     def test_06_05_multi_history(self):
         # create the base version

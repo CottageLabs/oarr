@@ -6,7 +6,7 @@ from flask.ext.login import login_user, current_user
 import portality.models as models
 from portality.core import app#, login_manager
 from portality import settings
-from portality.api import RegistryAPI, APIException
+from portality.api import RegistryAPI, APIException, AuthorisationException
 
 import json
 from datetime import datetime
@@ -76,27 +76,22 @@ def stat(record_id, stat_id):
     acc = models.Account.pull_by_auth_token(apikey)
     if acc is None:
         abort(401)
-    if not acc.statistics_access:
-        abort(401)
     
     # check that the record exists
     reg = models.Register.pull(record_id)
     if reg is None:
-        print "no reg"
         abort(404)
         
     # check that the stat being removed exists
     stat = models.Statistics.pull(stat_id)
     if stat is None:
-        print "no stat"
         abort(404)
     
-    # check the account owns the stat
-    if stat.third_party != acc.name:
-        abort(401)
-    
     # if we get here, delete can go ahead
-    RegistryAPI.delete_statistic(acc, stat)
+    try:
+        RegistryAPI.delete_statistic(acc, stat)
+    except AuthorisationException:
+        abort(401)
     
     # return a json response
     resp = make_response(json.dumps({"success" : "true"}))
@@ -125,8 +120,6 @@ def stats(record_id):
         acc = models.Account.pull_by_auth_token(apikey)
         if acc is None:
             abort(401)
-        if not acc.statistics_access:
-            abort(401)
         
         # check that the record being updated exists
         reg = models.Register.pull(record_id)
@@ -141,6 +134,8 @@ def stats(record_id):
         
         try:
             stat_id = RegistryAPI.add_statistic(acc, reg, stat)
+        except AuthorisationException:
+            abort(401)
         except APIException:
             abort(400)
         
@@ -160,8 +155,6 @@ def admin(record_id):
     acc = models.Account.pull_by_auth_token(apikey)
     if acc is None:
         abort(401)
-    if not acc.admin_access:
-        abort(401)
     
     # check that the record being updated exists
     reg = models.Register.pull(record_id)
@@ -174,7 +167,10 @@ def admin(record_id):
     except:
         abort(400)
     
-    RegistryAPI.set_admin(acc, reg, admin)
+    try:
+        RegistryAPI.set_admin(acc, reg, admin)
+    except AuthorisationException:
+        abort(401)
     
     # return a json response
     resp = make_response(json.dumps({"success" : "true"}))
@@ -218,8 +214,6 @@ def record(record_id):
         acc = models.Account.pull_by_auth_token(apikey)
         if acc is None:
             abort(401)
-        if not acc.registry_access:
-            abort(401)
         
         # check that the record being updated exists
         reg = models.Register.pull(record_id)
@@ -232,7 +226,12 @@ def record(record_id):
         except:
             abort(400)
         
-        RegistryAPI.update_register(acc, reg, newregister)
+        try:
+            RegistryAPI.update_register(acc, reg, newregister)
+        except AuthorisationException:
+            abort(401)
+        except APIException:
+            abort(400)
         
         # return a json response
         resp = make_response(json.dumps({"success" : "true"}))
@@ -244,8 +243,6 @@ def record(record_id):
         apikey = request.values.get("api_key")
         acc = models.Account.pull_by_auth_token(apikey)
         if acc is None:
-            abort(401)
-        if not acc.registry_access:
             abort(401)
         
         # check that the record being updated exists
@@ -259,7 +256,12 @@ def record(record_id):
         except:
             abort(400)
         
-        RegistryAPI.replace_register(acc, reg, newregister)
+        try:
+            RegistryAPI.replace_register(acc, reg, newregister)
+        except AuthorisationException:
+            abort(401)
+        except APIException:
+            abort(400)
         
         # return a json response
         resp = make_response(json.dumps({"success" : "true"}))
@@ -272,8 +274,6 @@ def record(record_id):
         acc = models.Account.pull_by_auth_token(apikey)
         if acc is None:
             abort(401)
-        if not acc.registry_access:
-            abort(401)
         
         # check that the record being updated exists
         reg = models.Register.pull(record_id)
@@ -281,7 +281,10 @@ def record(record_id):
             abort(404)
         
         # delete it
-        RegistryAPI.delete_register(acc, reg)
+        try:
+            RegistryAPI.delete_register(acc, reg)
+        except AuthorisationException:
+            abort(401)
         
         # return a json response
         resp = make_response(json.dumps({"success" : "true"}))
@@ -296,10 +299,8 @@ def create_record():
     acc = models.Account.pull_by_auth_token(apikey)
     if acc is None:
         abort(401)
-    if not acc.registry_access:
-        abort(401)
     
-    # create the new record
+    # read in the register data
     try:
         newregister = json.loads(request.data)
     except:
@@ -307,7 +308,9 @@ def create_record():
     
     try:
         id = RegistryAPI.create_register(acc, newregister)
-    except:
+    except AuthorisationException:
+        abort(401)
+    except APIException:
         abort(400)
     
     # return a json response

@@ -47,8 +47,16 @@ class RegistryAPI(object):
         # prune the third party account data if necessary
         cls._prune_third_party(account, new_register)
         
+        # we may be getting admin data too
+        if "admin" in new_register:
+            if not account.admin_access:
+                raise AuthorisationException("This user account does not have permission to set admin data on the registry")
+        
         # mint the object and save
-        record = models.Register(new_register)
+        try:
+            record = models.Register(new_register)
+        except models.ModelException:
+            raise APIException("unable to create register object from supplied data")
         record.save()
         
         # return the identifier of the newly created item
@@ -67,9 +75,17 @@ class RegistryAPI(object):
         # prune the third party account data if necessary
         cls._prune_third_party(account, new_register)
         
+        # we may be getting admin data too
+        if "admin" in new_register:
+            if not account.admin_access:
+                raise AuthorisationException("This user account does not have permission to set admin data on the registry")
+        
         # snapshot, then merge the new register into the record and save
         record.snapshot(account=account)
-        record.merge_register(new_register)
+        try:
+            record.merge_register(new_register)
+        except models.ModelException:
+            raise APIException("unable to create register object from supplied data")
         record.save()
     
     @classmethod
@@ -85,9 +101,17 @@ class RegistryAPI(object):
         # prune the third party account data if necessary
         cls._prune_third_party(account, new_register)
         
+        # we may be getting admin data too
+        if "admin" in new_register:
+            if not account.admin_access:
+                raise AuthorisationException("This user account does not have permission to set admin data on the registry")
+        
         # snapshot, then replace the register and save
         record.snapshot(account=account)
-        record.replace_register(new_register)
+        try:
+            record.replace_register(new_register)
+        except models.ModelException:
+            raise APIException("unable to create register object from supplied data")
         record.save()
     
     @classmethod
