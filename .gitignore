@@ -5,6 +5,7 @@ src*
 .Python
 build/*
 dist/*
+.idea/
 
 app.cfg
 

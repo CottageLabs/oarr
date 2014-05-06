@@ -61,14 +61,14 @@ This represents the full dataset required to be captured for the registry.  It i
                     "default" : true|false
                     "record" : {
                         "lat" : "<latitude of repository>",
-                        "long" : "<logitude of repository>",
+                        "lon" : "<logitude of repository>",
                         "country" : "<country repository resides in>",
                         "continent" : "<continent repository resides in>",
                         "twitter" : "<repository's twitter handle>",
                         "acronym" : "<repository name acronym>",
                         "description" : "<free text description of repository>",
                         "established_date" : "<date established!>",
-                        "languages" : [<languages of content found in repo (iso-639-1)>],
+                        "language" : [<languages of content found in repo (iso-639-1)>],
                         "name" : "<name of repository>",
                         "url" : "<url for repository home page>",
                         "subjects" : ["<subject classifications for repository>"]
@@ -563,7 +563,7 @@ The Register Index is the place where repository metadata and administrative dat
                         "lon" : "<longitude of organisation/unit>"
                     }
                 }
-            ]
+            ],
             "policy" : [
                 {
                     "policy_type" : "<vocabulary term for policy>",
@@ -580,7 +580,7 @@ The Register Index is the place where repository metadata and administrative dat
                     
                     "metadata_prefixes" : [<list of supported prefixes>], # oai-pmh
                     "accepts" : [<list of accepted mimetypes>], # sword
-                    "acceptPackaging" : [<list of accepted package formats>], #sword
+                    "accept_packaging" : [<list of accepted package formats>], #sword
                 }
             ],
             "integration": [

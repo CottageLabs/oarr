@@ -2,14 +2,14 @@ import requests, HTMLParser
 from lxml import etree
 import StringIO
 from portality import models
+from incf.countryutils import transformations
 
 h = HTMLParser.HTMLParser()
 
 """
+
 resp = requests.get("http://opendoar.org/api13.php?all=y&show=max")
-
 # do something to convert the request into a stream reader, like use StringIO
-
 f = StringIO.StringIO(resp.text)
 """
 
@@ -78,7 +78,18 @@ def migrate_repo(repo):
     _extract(repo, "paLongitude", organisation, "lon", cast=float)
     
     cel = repo.find("country")
-    _extract(repo, "cIsoCode", organisation, "country", lower=True)
+    _extract(cel, "cIsoCode", metadata, "country", lower=True)
+    _extract(cel, "cIsoCode", organisation, "country", lower=True)
+
+    isocode = cel.find("cIsoCode")
+    if isocode is not None:
+        code = isocode.text
+        if code is not None and code != "":
+            try:
+                continent = transformations.cca_to_ctca2(code)
+                metadata["continent"] = continent.lower()
+            except KeyError:
+                pass
     
     # repository description
     _extract(repo, "rDescription", metadata, "description", unescape=True)
@@ -157,8 +168,18 @@ def migrate_repo(repo):
         if not has_phone:
             _extract(repo, "paPhone", cont_details, "phone")
         _extract(repo, "paFax", cont_details, "fax")
+
+        # we also add the top level stuff about lat/lon
+        if organisation.get("lat") is not None:
+            cont_details["lat"] = organisation.get("lat")
+        if organisation.get("lon") is not None:
+            cont_details["lon"] = organisation.get("lon")
+
+        # record the job title as the contact role for the time being
+        full_record = {"details" : cont_details}
+        _extract(contact, "pJobTitle", full_record, "role", unescape=True, aslist=True)
         
-        contacts.append(cont_details)
+        contacts.append(full_record)
 
     # now assemble the object
     register["metadata"] = [
@@ -169,8 +190,8 @@ def migrate_repo(repo):
         }
     ]
     register["software"] = [software]
-    register["contact"] = [{"details" : c} for c in contacts]
-    register["organisation"] = [{"details" : organisation}]
+    register["contact"] = contacts
+    register["organisation"] = [{"details" : organisation, "role" : ["host"]}] # add a default role
     register["policy"] = policies
     register["api"] = apis
     

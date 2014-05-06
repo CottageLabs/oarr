@@ -13,7 +13,8 @@ setup(
         "esprit",
         #"markdown",
         #"gitpython",
-        "lxml"
+        "lxml",
+        "incf.countryutils"
     ],
     url = 'http://cottagelabs.com/',
     author = 'Cottage Labs',
