@@ -362,8 +362,8 @@ The Register Index is the place where repository metadata and administrative dat
         "created_date" : "<datestamp of record creation time>",
         
         "register" : {
-            "replaces" : "<oarr uri of repository this one replaces>",
-            "isreplacedby" : "<oarr uri of repository this one is replaced by>",
+            "replaces" : "<oarr info uri of repository this one replaces (info:oarr:<identifier>)",
+            "isreplacedby" : "<oarr info uri of repository this one is replaced by (info:oarr:<identifier>)>",
             "operational_status" : "<status flag for this repository>",
             
             "metadata" : [
@@ -399,7 +399,7 @@ The Register Index is the place where repository metadata and administrative dat
             "software" : [
                 {
                     "name" : "<name of software used to provide this repository>",
-                    "verson" : "<version of software used to provide this repository>",
+                    "version" : "<version of software used to provide this repository>",
                     "url" : "<url for the software/this version of the software>"
                 }
             ],
