@@ -136,8 +136,8 @@ class Register(dao.RegisterDAO):
                 "objects" : ["record"],
                 "object_entries" : {
                     "record" : {
-                        "fields" : ["country", "continent", "twitter", "acronym", "description", "established_date", "name", "url"],
-                        "lists" : ["language", "subject", "repository_type", "certification", "content_type"],
+                        "fields" : ["country", "country_code", "continent", "continent_code", "twitter", "acronym", "description", "established_date", "name", "url"],
+                        "lists" : ["language", "language_code", "subject", "repository_type", "certification", "content_type"],
                         "list_entries" : {
                             "subject" : {
                                 "fields" : ["scheme", "term", "code"]
@@ -163,7 +163,7 @@ class Register(dao.RegisterDAO):
                 "objects" : ["details"],
                 "object_entries" : {
                     "details" : {
-                        "fields" : ["name", "acronym", "url", "unit", "unit_acronym", "unit_url", "country", "lat", "lon"]
+                        "fields" : ["name", "acronym", "url", "unit", "unit_acronym", "unit_url", "country", "country_code", "lat", "lon"]
                     }
                 }
             },
@@ -197,13 +197,15 @@ class Register(dao.RegisterDAO):
                     "lang" : "en",
                     "default" : true|false
                     "record" : {
-                        "country" : "<country repository resides in>",
+                        "country" : "<name of country repository resides in>",
+                        "country_code" : "<two-letter iso code for country>",
                         "continent" : "<continent repository resides in>",
                         "twitter" : "<repository's twitter handle>",
                         "acronym" : "<repository name acronym>",
                         "description" : "<free text description of repository>",
                         "established_date" : "<date established!>",
-                        "language" : [<languages of content found in repo (iso-639-1)>],
+                        "language" : [<languages of content found in repo (names of)>],
+                        "language_code" : [<languages of content found in repo (iso-639-1)>],
                         "name" : "<name of repository>",
                         "url" : "<url for repository home page>",
                         "subject" : [

@@ -14,7 +14,8 @@ setup(
         #"markdown",
         #"gitpython",
         "lxml",
-        "incf.countryutils"
+        "incf.countryutils",
+        "pycountry"
     ],
     url = 'http://cottagelabs.com/',
     author = 'Cottage Labs',

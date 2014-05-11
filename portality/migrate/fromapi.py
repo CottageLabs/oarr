@@ -2,7 +2,8 @@ import requests, HTMLParser
 from lxml import etree
 import StringIO
 from portality import models
-from incf.countryutils import transformations
+from incf.countryutils import transformations # need this for continents data
+import pycountry
 
 h = HTMLParser.HTMLParser()
 
@@ -20,20 +21,26 @@ xml = etree.parse(f)
 root = xml.getroot()
 repos = root.find("repositories")
 
-def _extract(repo, field, target_dict, target_field, unescape=False, lower=False, cast=None, aslist=False):
+def _extract(repo, field, target_dict, target_field, unescape=False, lower=False, cast=None, aslist=False, append=False, prepend=None):
     el = repo.find(field)
     if el is not None:
         val = el.text
         if val is not None:
-             if unescape:
+            if prepend is not None:
+                val = prepend + val
+            if unescape:
                 val = h.unescape(val)
-             if lower:
+            if lower:
                 val = val.lower()
-             if cast is not None:
+            if cast is not None:
                 val = cast(val)
-             if aslist:
+            if aslist:
                 val = [val]
-             target_dict[target_field] = val
+
+            if append:
+                target_dict[target_field] += val
+            else:
+                target_dict[target_field] = val
 
 def migrate_repo(repo):
     # the various components we need to assemble
@@ -78,16 +85,24 @@ def migrate_repo(repo):
     _extract(repo, "paLongitude", organisation, "lon", cast=float)
     
     cel = repo.find("country")
-    _extract(cel, "cIsoCode", metadata, "country", lower=True)
-    _extract(cel, "cIsoCode", organisation, "country", lower=True)
+    _extract(cel, "cIsoCode", metadata, "country_code", lower=True)
+    _extract(cel, "cIsoCode", organisation, "country_code", lower=True)
 
     isocode = cel.find("cIsoCode")
     if isocode is not None:
         code = isocode.text
         if code is not None and code != "":
             try:
-                continent = transformations.cca_to_ctca2(code)
-                metadata["continent"] = continent.lower()
+                # specify the continent in the metadata
+                continent_code = transformations.cca_to_ctca2(code)
+                metadata["continent_code"] = continent_code.lower()
+                continent = transformations.cca_to_ctn(code)
+                metadata["continent"] = continent
+
+                # normalised country name
+                country = pycountry.countries.get(alpha2=code.upper()).name
+                metadata["country"] = country
+                organisation["country"] = country
             except KeyError:
                 pass
     
@@ -95,7 +110,7 @@ def migrate_repo(repo):
     _extract(repo, "rDescription", metadata, "description", unescape=True)
     
     # remarks
-    _extract(repo, "rRemarks", opendoar, "remarks", unescape=True)
+    _extract(repo, "rRemarks", metadata, "description", unescape=True, append=True, prepend="  ")
     
     # statistics
     _extract(repo, "rNumOfItems", statistics, "value", cast=int)
@@ -127,10 +142,15 @@ def migrate_repo(repo):
     # languages
     langs = repo.find("languages")
     if langs is not None:
+        metadata["language_code"] = []
         metadata["language"] = []
         for l in langs:
             code = l.find("lIsoCode")
-            metadata["language"].append(code.text)
+            if code is not None and code.text != "":
+                lc = code.text.lower()
+                lang = pycountry.languages.get(alpha2=lc).name
+                metadata["language_code"].append(lc)
+                metadata["language"].append(lang)
     
     # content types
     ctel = repo.find("contentTypes")

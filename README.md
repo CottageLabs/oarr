@@ -38,151 +38,7 @@ As a read-write interface, the following will be true of the API:
 
 ## Core Data Model
 
-This represents the full dataset required to be captured for the registry.  It is not yet optimised for storage or searching, it's just a list of all the things that we need to know, and roughly how they relate to eachother.
-
-    {
-        "id" : "<opaque identifier for this repository>",
-        "last_updated" : "<datestamp of last record modification>",
-        "created_date" : "<datestamp of record creation time>",
-        "version_created" : "<datestampe of when the current version of the object was created>",
-        
-        "register" : {
-            "replaces" : "<oarr uri of repository this one replaces>",
-            "isreplacedby" : "<oarr uri of repository this one is replaced by>",
-            "operational_status" : "<status flag for this repository>",
-            
-            "repository_type" : [<list of vocabulary terms for the repository>],
-            "certification" : [<list of certifications held by this repository>],
-            "content_type" : [<list of vocabulary terms for the content in this repository>]
-            
-            "metadata" : [
-                {
-                    "lang" : "en",
-                    "default" : true|false
-                    "record" : {
-                        "lat" : "<latitude of repository>",
-                        "lon" : "<logitude of repository>",
-                        "country" : "<country repository resides in>",
-                        "continent" : "<continent repository resides in>",
-                        "twitter" : "<repository's twitter handle>",
-                        "acronym" : "<repository name acronym>",
-                        "description" : "<free text description of repository>",
-                        "established_date" : "<date established!>",
-                        "language" : [<languages of content found in repo (iso-639-1)>],
-                        "name" : "<name of repository>",
-                        "url" : "<url for repository home page>",
-                        "subjects" : ["<subject classifications for repository>"]
-                    }
-                }
-            ],
-            "software" : [
-                {
-                    "name" : "<name of software used to provide this repository>",
-                    "verson" : "<version of software used to provide this repository>",
-                    "url" : "<url for the software/this version of the software>"
-                }
-            ],
-            "contact" : [
-                {
-                    "role" : ["<contact role with regard to this repository>"]
-                    "details": {
-                        "id" : "<unique id for this contact across all records>",
-                        "name" : "<contact name>",
-                        "email" : "<contact email>",
-                        "address" : {
-                            <details of address>
-                        },
-                        "fax": "<fax number of contact>",
-                        "phone": "<phone number of contact>",
-                        "lat" : "<latitude of contact location>",
-                        "long" : "<longitude of contact location>"
-                    },
-                    "created_date" : "<date this contact record was created>",
-                    "last_modified" : "<date this contact record was last modified>"
-                }
-            ],
-            "organisation" : [
-                {
-                    "role" : [<organisation roles with regard to this repository>],
-                    "details" : {
-                        "id" : "<unique id for this organisation across all records>",
-                        "name" : "<name of organisation>",
-                        "address" : {
-                            <details of address>
-                        },
-                        "acronym" : "<acronym of organisation>",
-                        "lat" : "<latitude of organisation>",
-                        "long" : "<longitude of organisation>"
-                    },
-                    "created_date" : "<date this contact record was created>",
-                    "last_modified" : "<date this contact record was last modified>"
-                }
-            ]
-            "policy" : [
-                {
-                    "policy_type" : "<vocabulary term for policy>",
-                    "description" : "<description of policy terms, human readable>",
-                    "tags" : [<list of tags/vocabulary terms describing the policy>]
-                }
-            ],
-            "api" : [
-                {
-                    "api_type" : "<api type from known list or free text>",
-                    "version" : "<version of the API>",
-                    "base_url" : "<base url of API>",
-                    
-                    "metadata_prefixes" : [<list of supported prefixes>], # oai-pmh
-                    "accepts" : [<list of accepted mimetypes>], # sword
-                    "acceptPackaging" : [<list of accepted package formats>], #sword
-                }
-            ],
-            "integration": [
-                {
-                    "integrated_with" : "<type of system integrated with>",
-                    "nature" : "<nature of integration>",
-                    "url" : "<url of system integrated with, if available>",
-                    "software" : "<name of software integrated with>",
-                    "version": "<version of software integrated with>"
-                }
-            ]
-        },
-        
-        "statistics": [
-            {
-                "id" : "<opaque identifier for this statistical record>",
-                "value" : "<the numerical statistic, whatever it is>",
-                "type" : "<the type of statistic>",
-                "date" : "<date the statistic was generated>",
-                "third_party" : "<system id that provided the statistic>"
-            }
-        ],
-        
-        "admin" : {
-            "<third_party name>" : {
-                "date_added" : "<date 3rd party approved record for inclusion>",
-                "in_opendoar" : true|false,
-                "workflow" : "<pending|eligible|etc>"
-            }
-        },
-        
-        "history" : [
-            "date" : "<date this history record was created>",
-            "record" : {<historic version of the record>}
-        ]
-    }
-
-### Notes on the Core Data Model
-
-* replaces/isreplacedby is not for versioning the record, it is for when another repository actually replaces the current one in the real world
-* Everything in "register" is the metadata associated with a repository in the registry.  Everything outside that is either administrator or in some way otherwise related to third party supplied information
-* The metadata field can hold multiple objects, and each object can be used to represent a different language of the metadata.  The record marked as "default" should be taken as the primary record, and if the record is requested in some other language, the record for that other language should be overlaid onto the default one.  In this way, fields which do not have translations fall back to the default language.
-* metadata.lang and metadata.language - both the language tag and the languages of content stored in the repository should be represented with iso-639-1 language codes.
-* Contacts may need to be stored separately, so that we can refer to them independently via their identifier, and list the repositories associated with them.  As such they have created and last modified dates associated with them.
-* Organisations may need to be stored separately, so that we can refer to them independently via their identifier, and list the repositories associated with them.  As such they have created and last modified dates associated with them.
-* Entries in the API field will always take the first three fields: api_type, version, base_url, but then depending on the specific API, extra details may also be provided
-* The values in "admin" are examples which are relevant to OpenDOAR.  This part of the model will be extensible, and third parties may store whatever they need in here (within reason)
-* <third_party name> provides namespacing for admin fields, so that they unambiguously relate to the correct third party
-* "history" indicates that we will need to store some previous versions of the record.  They may be embedded in the main record, or stored separately or in another type in the index.  Note that we will only need to revision the part of the record in "registry" - the rest of the record is under control by external parties, and it is their responsibility to manage the content in the most appropriate way.
+This section has been deprecated - see the Index Structure instead
 
 ## Third Party Account Model
 
@@ -483,6 +339,19 @@ Provide a complete new admin record for the authenticating third party.  This wi
 
 ## Index Structure
 
+### General notes on the Index Structure
+
+* replaces/isreplacedby is not for versioning the record, it is for when another repository actually replaces the current one in the real world
+* Everything in "register" is the metadata associated with a repository in the registry.  Everything outside that is either administrator or in some way otherwise related to third party supplied information
+* The metadata field can hold multiple objects, and each object can be used to represent a different language of the metadata.  The record marked as "default" should be taken as the primary record, and if the record is requested in some other language, the record for that other language should be overlaid onto the default one.  In this way, fields which do not have translations fall back to the default language.
+* metadata.lang and metadata.language - both the language tag and the languages of content stored in the repository should be represented with iso-639-1 language codes.
+* Contacts may need to be stored separately, so that we can refer to them independently via their identifier, and list the repositories associated with them.  As such they have created and last modified dates associated with them.
+* Organisations may need to be stored separately, so that we can refer to them independently via their identifier, and list the repositories associated with them.  As such they have created and last modified dates associated with them.
+* Entries in the API field will always take the first three fields: api_type, version, base_url, but then depending on the specific API, extra details may also be provided
+* The values in "admin" are examples which are relevant to OpenDOAR.  This part of the model will be extensible, and third parties may store whatever they need in here (within reason)
+* <third_party name> provides namespacing for admin fields, so that they unambiguously relate to the correct third party
+* "history" indicates that we will need to store some previous versions of the record.  They may be embedded in the main record, or stored separately or in another type in the index.  Note that we will only need to revision the part of the record in "registry" - the rest of the record is under control by external parties, and it is their responsibility to manage the content in the most appropriate way.
+
 ### Register Index
 
 The Register Index is the place where repository metadata and administrative data about the repositories are stored.  It is also where all search queries are routed.
@@ -502,13 +371,16 @@ The Register Index is the place where repository metadata and administrative dat
                     "lang" : "en",
                     "default" : true|false
                     "record" : {
-                        "country" : "<country repository resides in>",
+                        "country" : "<name of country repository resides in>",
+                        "country_code" : "<two-letter iso code for country>",
                         "continent" : "<continent repository resides in>",
+                        "continent_code" : "<two-letter iso code for continent repository resides in>",
                         "twitter" : "<repository's twitter handle>",
                         "acronym" : "<repository name acronym>",
                         "description" : "<free text description of repository>",
                         "established_date" : "<date established!>",
-                        "language" : [<languages of content found in repo (iso-639-1)>],
+                        "language" : [<languages of content found in repo (names of)>],
+                        "language_code" : [<languages of content found in repo (iso-639-1)>],
                         "name" : "<name of repository>",
                         "url" : "<url for repository home page>",
                         "subject" : [
@@ -558,7 +430,8 @@ The Register Index is the place where repository metadata and administrative dat
                         "unit_acronym" : "<acronym of unit responsible>",
                         "unit_url" : "<url of responsible unit>",
                         
-                        "country" : "<country repository resides in>",
+                        "country" : "<country organisation resides in>",
+                        "country_code" : "<two letter country code organisation resides in>",
                         "lat" : "<latitude of organisation/unit>",
                         "lon" : "<longitude of organisation/unit>"
                     }
