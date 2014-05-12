@@ -32,15 +32,24 @@ class AccountDAO(esprit.dao.DomainObject):
         super(AccountDAO, self).save(conn=conn, created=created, updated=updated)
 
 class AccountQuery(object):
-    def __init__(self, auth_token=None):
+    def __init__(self, auth_token=None, name=None):
         self.auth_token = auth_token
+        self.name = name
     def query(self):
-        q = {
-            "query" : {
-                "term" : {"auth_token.exact" : self.auth_token}
+        if self.auth_token is not None:
+            q = {
+                "query" : {
+                    "term" : {"auth_token.exact" : self.auth_token}
+                }
             }
-        }
-        return q
+            return q
+        elif self.name is not None:
+            q = {
+                "query" : {
+                    "term" : {"name.exact" : self.name}
+                }
+            }
+            return q
 
 class AccountDAOException(Exception):
     pass
