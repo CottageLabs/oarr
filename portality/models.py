@@ -173,7 +173,12 @@ class Register(dao.RegisterDAO):
             },
             "api" : {
                 "fields" : ["api_type", "version", "base_url"],
-                "lists" : ["metadata_prefixes", "accepts", "accept_packaging"]
+                "lists" : ["metadata_formats", "accepts", "accept_packaging"],
+                "list_entries" : {
+                    "metadata_formats" : {
+                        "fields" : ["prefix", "namespace", "schema"]
+                    }
+                }
             },
             "integration" : {
                 "fields" : ["integrated_with", "nature", "url", "software", "version"]
@@ -275,7 +280,7 @@ class Register(dao.RegisterDAO):
                     "version" : "<version of the API>",
                     "base_url" : "<base url of API>",
                     
-                    "metadata_prefixes" : [<list of supported prefixes>], # oai-pmh
+                    "metadata_formats" : [{"prefix" : "<prefix>", "namespace" : "<namespace>", "schema" : "<schema>"}], # oai-pmh
                     "accepts" : [<list of accepted mimetypes>], # sword
                     "accept_packaging" : [<list of accepted package formats>], #sword
                 }

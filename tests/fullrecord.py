@@ -168,7 +168,10 @@ record = {
                 "api_type" : "oai-pmh",
                 "version" : "2.0",
                 "base_url" : "http://cottagelabs.com/pmh",
-                "metadata_prefixes" : ["oai_dc", "jats"]
+                "metadata_formats" : [
+                    {"prefix" : "oai_dc", "namespace" : "http://www.openarchives.org/OAI/2.0/oai_dc/", "schema" : "http://www.openarchives.org/OAI/2.0/oai_dc.xsd"},
+                    {"prefix" : "marc", "namespace" : "http://www.loc.gov/MARC21/slim", "schema" : "http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"}
+                ]
             },
             {
                 "api_type" : "sword",
@@ -200,3 +203,4 @@ record = {
 from portality.models import Register
 r = Register(record)
 r.save()
+print r.id
