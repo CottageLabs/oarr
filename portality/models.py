@@ -168,7 +168,7 @@ class Register(dao.RegisterDAO):
                 }
             },
             "policy" : {
-                "fields" : ["policy_type", "policy_grade", "description"],
+                "fields" : ["policy_type", "description"],
                 "lists" : ["terms"]
             },
             "api" : {
@@ -269,7 +269,6 @@ class Register(dao.RegisterDAO):
             "policy" : [
                 {
                     "policy_type" : "<vocabulary term for policy>",
-                    "policy_grade" : "<vocabulary term for quality of policy>",
                     "description" : "<description of policy terms, human readable>",
                     "terms" : [<list of vocabulary terms describing the policy>]
                 }

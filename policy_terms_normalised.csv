@@ -1,0 +1,262 @@
+Policy Term,Migrate To,Special Instructions,Becomes
+No policy registered in OpenDOAR.,,Ignore,
+Anyone may access the metadata free of charge.,,,Anyone can read the metadata
+Anyone may access full items free of charge.,,,Anyone can read the full text or view the image
+This is an institutional or departmental repository.,"register.metadata.record.repository_type:[""Institutional""]",,
+No metadata re-use policy defined. Assume no rights at all have been granted.,,Ignore,
+No preservation policy defined.,,Ignore,
+No full-item re-use policy defined. Assume no rights at all have been granted.,,Ignore,
+No content policy defined.,,Ignore,
+No submission policy defined.,,Ignore,
+For more information see webpage:,,,Visit webpage for more details
+The validity and authenticity of the content of submissions is the sole responsibility of the depositor.,,,Depositing authors are responsible for content and copyright  
+Full items must not be sold commercially in any format or medium without formal permission of the copyright holders.,,,Copyright holders permission needed for any commercial use
+"For more information, please see webpage:",,,Visit webpage for more details
+No embargo policy defined.,,Ignore,
+The repository holds all types of materials.,,,
+Authors may only submit their own work for archiving.,,,Only Authors' own work accepted
+Items will be retained indefinitely.,,Keep,
+Any copyright violations are entirely the responsibility of the authors/depositors.,,,Depositing authors are responsible for content and copyright
+Acceptable reasons for withdrawal include:,,Keep,
+Withdrawn items' identifiers/URLs are retained indefinitely.,,Keep,
+This is a multi-institution subject-based repository.,"register.metadata.record.repository_type:[""Subject""]",,
+The repository regularly backs up its files according to current best practice.,,Keep,
+No closure policy defined.,,Ignore,
+"If the repository receives proof of copyright violation, the relevant item will be removed immediately.",,Keep,
+Deposited items may include:,,Ignore,
+"Withdrawn items are not deleted per se, but are removed from public view.",,Keep,
+Single copies of full items can be:,,,
+Copies of full items generally can be:,,,
+No moderation policy defined. Assume nothing has been vetted.,,Ignore,
+The repository will try to ensure continued readability and accessibility.,,Keep,
+"URLs will continue to point to 'tombstone' citations, to avoid broken links and to retain item histories.",,Keep,
+The metadata must not be re-used in any medium for commercial purposes without formal permission.,,,Copyright holders permission needed for any commercial use 
+"Items can be deposited at any time, but will not be made publicly visible until any publishers' or funders' embargo period has expired.",,,Items with embargos can be deposited and will be released when embargo has ceased 
+Items may not normally be removed from the repository.,,,Items cannot be changed or removed from repository
+"In the event of the repository being closed down, the database will be transferred to another appropriate archive.",,Keep,
+No file preservation policy defined.,,Ignore,
+Changes to deposited items are not permitted.,,,Items cannot be changed or removed
+Items are individually tagged with:,,Ignore,
+This repository is not the publisher; it is merely the online archive.,,,This repository is not the publisher
+Access to some or all full items is controlled.,,,Controlled access to certain items
+No retention period defined.,,Ignore,
+No deletion method for withdrawn items defined.,,Ignore,
+No functional specification policy has been defined.,,Ignore,
+"If necessary, an updated version may be deposited.",,,Updated versions or work may be deposited
+Eligible depositors must deposit bibliographic metadata for all their publications.,,,Authors must deposit metada with their work
+The metadata may be re-used in any medium without prior permission for not-for-profit purposes provided the OAI Identifier or a link to the original metadata record are given.,,,Metadata can be freely reused for not for profit reasons provided they are linked to original record
+"If necessary, an updated version may be deposited.",,,Updated versions or work may be deposited
+Subject Specialities:,,,
+The validity and authenticity of the content of submissions is not checked.,,,Depositing authors are responsible for content and copyright
+Mention of the repository is appreciated but not mandatory.,,Ignore,
+No withdrawal policy defined.,,Ignore,
+"The administrator only vets items for the eligibility of authors/depositors, relevance to the scope of the repository, valid layout & format, and the exclusion of spam",,,Content checked by administrators
+Errata and corrigenda lists may be included with the original record if required.,,Keep,
+"The original bit stream is retained for all items, in addition to any upgraded formats.",,Keep,
+The repository will try to ensure continued readability and accessibility.,,Merge  with 31,The repository will try to ensure continued readability and accessibility.
+Principal Languages: English,"register.metadata.record.language:[""English""]||register.metadata.record.language_code:[""en""]",,
+Some full items are individually tagged with different rights permissions and conditions.,,,Some full text items have individual rights
+The repository is restricted to:,,Ignore,
+The metadata of withdrawn items will not be searchable.,,Keep,
+The metadata may be re-used in any medium without prior permission for not-for-profit purposes and re-sold commercially provided the OAI Identifier or a link to the original metadata record are given.,,,Metadata can be freely reused including commercially provided they are linked to original record
+Full items must not be harvested by robots,,Keep,
+Items may be removed at the request of the author/copyright holder.,,Keep,
+Items may only be deposited by accredited members of the institution,,,Only members of the organisation can deposit their work
+"Items may only be deposited by accredited members of the institution, or their delegated agents.",,,Members of the organisation or their representaives can deposit work
+"Items may be removed at the request of the author/copyright holder, but this is strongly discouraged.",,,Items may be removed at the request of the author/copyright holder
+Full items must not be harvested by robots except transiently for full-text indexing or citation analysis,,Keep,
+The metadata may be re-used in any medium without prior permission for not-for-profit purposes provided:,,Ignore,
+"Eligible depositors must deposit full texts of all their publications, although they may delay making them publicly visible to comply with publishers' embargos.",,,Items with embargos can be deposited and will be released when embargo has ceased
+Withdrawn items are deleted entirely from the database.,,Keep,
+The metadata may be re-used in any medium without prior permission for not-for-profit purposes,,,Metadata can be freely reused for not for profit reasons
+"Items may only be deposited by accredited members of the organisation, or their delegated agents.",,,Only members of the organisation can deposit their work
+The validity and authenticity of the content of submissions is checked by internal subject specialists.,,Keep,
+The repository is restricted to:Theses and dissertations,"regsiter.metadata.record.content_type:[""Theses and dissertations""]",,
+Subject Specialities: Multidisciplinary,"register.metadata.record.subject:[{""term"" : ""Multidisciplinary""}]",,
+The administrator only vets items for relevance to the scope of the repository,,,Content checked by administrators
+Items may not be deposited until any publishers' or funders' embargo period has expired.,,,Items with embargoes cannot be deposited
+"URLs will continue to point to 'tombstone' citations, to avoid broken links and to retain item histories, with:",,Keep,
+The metadata may be re-used in any medium without prior permission for not-for-profit purposes and re-sold commercially,,,"Metadata can be freely reused, including commercially"
+Eligible depositors must deposit full texts of all their publications.,,Keep,
+The administrator only vets items for the exclusion of spam,,,Content checked by administrators
+Withdrawn items' identifiers/URLs are not retained.,,Keep,
+Items are allocated a checksum to facilitate the detection of alterations.,,Keep,
+The repository is working with external partners to:,,Keep,
+Items may only be deposited by accredited members of the subject community,,,Only members of the subject community can deposit their work
+Withdrawn items' identifiers/URLs are retained transiently.,,Keep,
+"Items may only be deposited by academic staff, and registered students of the institution",,,Only members of the organisation can deposit their work
+"The administrator only vets items for the eligibility of authors/depositors, and relevance to the scope of the repository",,,Content checked by administrators
+The administrator only vets items for the eligibility of authors/depositors,,,Content checked by administrators
+Subject Specialities: Science General,"register.metadata.record.subject:[{""term"" : ""Science General""}]",,
+"Items may only be deposited by accredited members, academic staff, registered students, and employees of the institution, or their delegated agents.",,,Members of the organisation of their representaives can deposit work
+"Items may only be deposited by accredited members, academic staff, and registered students of the institution",,,Only members of the organisation can deposit their work
+"Items may only be deposited by accredited members of the subject community, or their delegated agents.",,,Members of the organisation of their representaives can deposit work
+Items may only be deposited by academic staff of the institution,,,Only members of the organisation can deposit their work
+The repository is working with external partners to convert or migrate file formats,,Keep,
+"The administrator only vets items for the eligibility of authors/depositors, relevance to the scope of the repository, and valid layout & format",,,Content checked by administrators
+Items are individually tagged with their publication status.,,Keep,
+All full items are individually tagged with differing rights permissions and conditions.,,,Some full text items have individual rights
+The metadata may be re-used in any medium without prior permission for not-for-profit purposes and re-sold commercially provided:,,Ignore,
+Submitted items are not vetted by the administrator.,,Ignore,
+The repository holds all types of materials except:,,Ignore,
+The administrator only vets items for valid layout & format,,,Content checked by administrators
+Items may only be deposited by registered students of the institution,,,Only students of the organisation can deposit their work
+"Items may only be deposited by accredited members, and academic staff of the institution, or their delegated agents.",,,Members of the organisation of their representaives can deposit work
+"Items may only be deposited by accredited members, academic staff, and registered students of the institution, or their delegated agents.",,,Members of the organisation of their representaives can deposit work
+"Items may only be deposited by academic staff, and registered students of the institution, or their delegated agents.",,,Members of the organisation of their representaives can deposit work
+The repository is working with external partners to backup items in external archives,,keep,
+"The administrator only vets items for the eligibility of authors/depositors, relevance to the scope of the repository, and the exclusion of spam",,,Content checked by administrators
+"Items may only be deposited by academic staff of the institution, or their delegated agents.",,,Only staff of the organisation or their representaives can deposit their work
+The repository is restricted to:Journal articles,"regsiter.metadata.record.content_type:[""Journal articles""]",,
+Principal Languages: Spanish; English,"register.metadata.record.language:[""English"", ""Spanish""]||register.metadata.record.language_code:[""en"", ""es""]",,
+Items may only be deposited by accredited members of the organisation,,,Only members of the organisation can deposit their work
+"The administrator only vets items for the eligibility of authors/depositors, and valid layout & format",,,Content checked by administrators
+Subject Specialities: Mathematics and Statistics,"register.metadata.record.subject:[{""term"" : ""Mathematics and Statistics""}]",,
+Subject Specialities: Library and Information Science,"register.metadata.record.subject:[{""term"" : ""Library and Information Science""}]",,
+Subject Specialities: Health and Medicine,"register.metadata.record.subject:[{""term"" : ""Health and Medicine""}]",,
+"Items may only be deposited by accredited members, and academic staff of the institution",,,Only members of the organisation can deposit their work
+Full items must not be harvested by robots except transiently for full-text indexing,,keep,
+Deposited items may include published versions (publisher-created files),"regsiter.metadata.record.content_type:[""Journal articles""]",,
+Access to some or all of the metadata is controlled.,,Keep,
+The metadata may be re-used in any medium without prior permission for not-for-profit purposes provided the repository is mentioned.,,,Metadata may be used for not for profit  freely with accreditation to repository
+"The administrator only vets items for valid layout & format, and the exclusion of spam",,,Content checked by administrators
+"The administrator only vets items for relevance to the scope of the repository, and valid layout & format",,,Content checked by administrators
+Subject Specialities: Arts and Humanities General,"register.metadata.record.subject:[{""term"" : ""Arts and Humanities General""}]",,
+Items will be retained for at least 10 years from the date of deposition.,,Keep,
+Items may only be deposited by employees of the institution,,,Only employees of the organisation can deposit their work
+"Items may only be deposited by academic staff, registered students, and employees of the institution",,,Only members of the organisation can deposit their work
+"Items may only be deposited by academic staff of the organisation, or their delegated agents.",,,Only staff of the organisation or their representatives can deposit their work
+All re-use of full items is prohibited.,,Keep,
+Subject Specialities: History and Archaeology (5),"register.metadata.record.subject:[{""term"" : ""History and Archaeology""}]",,
+Subject Specialities: Education (5),"register.metadata.record.subject:[{""term"" : ""Education""}]",,
+Principal Languages: Spanish (5),"register.metadata.record.language:[""Spanish""]||register.metadata.record.language_code:[""es""]",,
+Principal Languages: French; English (5),"register.metadata.record.language:[""English"", ""French""]||register.metadata.record.language_code:[""en"", ""fr""]",,
+Items will be retained for at least 5 years from the date of deposition.,,Keep,
+Items may only be deposited by employees of the organisation,,,Only emploees of the organisation can deposit their work
+Items may only be deposited by accredited members of the department,,,Only members of the department can deposit their work
+Items may only be deposited by academic staff of the organisation,,,Only staff of the organisation can deposit their work
+"In the event of the repository being closed down, items will be returned to their originators.",,Keep,
+The repository holds all types of materials except:Learning Objects,,Ignore,
+"The administrator only vets items for the eligibility of authors/depositors, valid layout & format, and the exclusion of spam",,,Content checked by administrators
+"The administrator only vets items for relevance to the scope of the repository, valid layout & format, and the exclusion of spam",,,Content checked by administrators
+Principal Languages: German; English,"register.metadata.record.language:[""English"", ""German""]||register.metadata.record.language_code:[""en"", ""de""]",,
+"Items may only be deposited by academic staff, and employees of the institution",,,Only members of the organisation can deposit their work
+Items are individually tagged with their version type and date.,,,Some items have individual rights
+The repository is working with external partners to record preservation metadata,,Keep,
+The repository is restricted to:Unpublished reports and working papers,,Ignore,
+The repository is restricted to:,,Ignore,
+The metadata must not be re-used in any medium for not-for-profit purposes without formal permission.,,,Permission needed to use metadata
+Subject Specialities: Physics and Astronomy,"register.metadata.record.subject:[{""term"" : ""Physics and Astronomy""}]",,
+Subject Specialities: Law and Politics,"register.metadata.record.subject:[{""term"" : ""Law and Politics""}]",,
+"Subject Specialities: Agriculture, Food and Veterinary","register.metadata.record.subject:[{""term"" : ""Agriculture, Food and Veterinary""}]",,
+Single copies of full items can be:,,Ignore,
+Principal Languages: English; French,"register.metadata.record.language:[""English"", ""French""]||register.metadata.record.language_code:[""en"", ""fr""]",,
+"Items may only be deposited by accredited members, academic staff, registered students, and employees of the institution",,,Only members of the organisation can deposit their work
+"Items may only be deposited by accredited members, academic staff, and employees of the institution, or their delegated agents.",,,Members of the organisation or their representatives can deposit their work
+"Items may only be deposited by academic staff, registered students, and employees of the institution, or their delegated agents.",,,Members of the organisation or their representatives can deposit their work
+"Items may only be deposited by academic staff, and registered students of the organisation",,,Only members of the organisation can deposit their work
+"Items may only be deposited by academic staff, and employees of the institution, or their delegated agents.",,,Members of the organisation or their representatives can deposit their work
+Items are microfilmed for long-term preservation.,,Keep,
+Items are individually tagged with their peer-review status.,,Keep,
+Full items must not be harvested by robots except transiently for citation analysis,,Keep,
+Deposited items may include accepted versions (author's final peer-reviewed drafts),"regsiter.metadata.record.content_type:[""Journal articles""]",,
+Acceptable reasons for withdrawal include Proven copyright violation or plagiarism,,Keep,
+Acceptable reasons for withdrawal include Legal requirements and proven violations,,Keep,
+The repository is restricted to:Conference and workshop papers,,Ignore,
+"The repository is restricted to:Books, chapters and sections",,Ignore,
+The metadata must not be re-used in any medium for commercial purposes or not-for-profit purposes without formal permission.,,,Permission needed to use metadata
+The metadata may be re-used in any medium without prior permission for not-for-profit purposes and re-sold commercially provided the repository is mentioned.,,,Metadata may be used freely with accreditation to repository
+"The administrator only vets items for the eligibility of authors/depositors, and the exclusion of spam",,,Content checked by administrators
+"The administrator only vets items for relevance to the scope of the repository, and the exclusion of spam",,,Content checked by administrators
+Subject Specialities: Psychology,"register.metadata.record.subject:[{""term"" : ""Psychology""}]",,
+Subject Specialities: Philosophy and Religion,"register.metadata.record.subject:[{""term"" : ""Philosophy and Religion""}]",,
+Subject Specialities: Language and Literature,"register.metadata.record.subject:[{""term"" : ""Language and Literature""}]",,
+Subject Specialities: Geography and Regional Studies,"register.metadata.record.subject:[{""term"" : ""Geography and Regional Studies""}]",,
+Subject Specialities: Earth and Planetary Sciences,"register.metadata.record.subject:[{""term"" : ""Earth and Planetary Sciences""}]",,
+Subject Specialities: Computers and IT,"register.metadata.record.subject:[{""term"" : ""Computers and IT""}]",,
+Subject Specialities: Business and Economics,"register.metadata.record.subject:[{""term"" : ""Business and Economics""}]",,
+Principal Languages: Turkish,"register.metadata.record.language:[""Turkish""]||register.metadata.record.language_code:[""tr""]",,
+Principal Languages: Spanish; English; French,"register.metadata.record.language:[""Spanish"", ""English"", ""French""]||register.metadata.record.language_code:[""es"", ""en"", ""fr""]",,
+Principal Languages: Russian; English,"register.metadata.record.language:[""English"", ""Russian""]||register.metadata.record.language_code:[""en"", ""ru""]",,
+Principal Languages: Italian; English,"register.metadata.record.language:[""English"", ""Italian""]||register.metadata.record.language_code:[""en"", ""it""]",,
+Principal Languages: Indonesian; English,"register.metadata.record.language:[""English"", ""Indonesian""]||register.metadata.record.language_code:[""en"", ""id""]",,
+Principal Languages: French,"register.metadata.record.language:[""French""]||register.metadata.record.language_code:[""fr""]",,
+Principal Languages: English; Portuguese,"register.metadata.record.language:[""English"", ""Portugese""]||register.metadata.record.language_code:[""en"", ""pt""]",,
+Principal Languages: English; Indonesian,"register.metadata.record.language:[""English"", ""Indonesian""]||register.metadata.record.language_code:[""en"", ""id""]",,
+Principal Languages: English; Hungarian,"register.metadata.record.language:[""English"", ""Hungarian""]||register.metadata.record.language_code:[""en"", ""hu""]",,
+Principal Languages: Arabic; English,"register.metadata.record.language:[""English"", ""Arabic""]||register.metadata.record.language_code:[""en"", ""ar""]",,
+"Items may only be deposited by employees of the organisation, or their delegated agents.",,,Members of the organisation or their representatives can deposit their work
+"Items may only be deposited by accredited members, registered students, and employees of the institution",,,Only members of the organisation can deposit their work
+"Items may only be deposited by accredited members, and academic staff of the organisation, or their delegated agents.",,,Members of the organisation or their representatives can deposit their work
+"Items may only be deposited by accredited members, academic staff, registered students, and employees of the subject community, or their delegated agents.",,,Members of the organisation or their representatives can deposit their work
+"Items may only be deposited by accredited members, academic staff, registered students, and employees of the subject community",,,Only members of the organisation can deposit their work
+"Items may only be deposited by accredited members, academic staff, registered students, and employees of the organisation, or their delegated agents.",,,Members of the organisation or their representatives can deposit their work
+"Items may only be deposited by accredited members, academic staff, and employees of the institution",,,Only members of the organisation can deposit their work
+"Items may only be deposited by academic staff, registered students, and employees of the organisation, or their delegated agents.",,,Members of the organisation or their representatives can deposit their work
+"Items may only be deposited by academic staff, registered students, and employees of the department",,,Only members of the organisation can deposit their work
+Deposited items may include submitted versions (as sent to journals for peer-review),"regsiter.metadata.record.content_type:[""Journal articles""]",,
+"The repository is restricted to:Special materials: archives of Fiskeridirektoratet, the Norwegian Fishing Directorate, from 1895 onwards","regsiter.metadata.record.content_type:[""Other special item types""]",,
+The repository is restricted to:Learning Objects,"regsiter.metadata.record.content_type:[""Learning Objects""]",,
+The repository holds all types of materials except:Theses and dissertations,,,
+The repository holds all types of materials except:Datasets,,,
+Subject Specialities: Social Sciences General,"register.metadata.record.subject:[{""term"" : ""Social Sciences General""}]",,
+Subject Specialities: Mechanical Engineering and Materials,"register.metadata.record.subject:[{""term"" : ""Mechanical Engineering and Materials""}]",,
+Subject Specialities: Fine and Performing Arts,"register.metadata.record.subject:[{""term"" : ""Fine and Performing Arts""}]",,
+Subject Specialities: Ecology and Environment,"register.metadata.record.subject:[{""term"" : ""Ecology and Environment""}]",,
+Subject Specialities: Chemistry and Chemical Technology,"register.metadata.record.subject:[{""term"" : ""Chemistry and Chemical Technology""}]",,
+Principal Languages: Ukrainian; English; Russian,"register.metadata.record.language:[""English"", ""Ukranian"", ""Russian""]||register.metadata.record.language_code:[""en"", ""uk"", ""ru""]",,
+Principal Languages: Turkish; English,"register.metadata.record.language:[""English"", ""Turkish""]||register.metadata.record.language_code:[""en"", ""tr""]",,
+Principal Languages: Swedish; English,"register.metadata.record.language:[""English"", ""Swedish""]||register.metadata.record.language_code:[""en"", ""sv""]",,
+Principal Languages: Spanish; English; Portuguese; French,"register.metadata.record.language:[""English"", ""Spanish"", ""Portugese"", ""French""]||register.metadata.record.language_code:[""en"", ""es"", ""pt"", ""fr""]",,
+Principal Languages: Spanish; English; Portuguese,"register.metadata.record.language:[""English"", ""Spanish"", ""Portugese""]||register.metadata.record.language_code:[""en"", ""es"", ""pt""]",,
+Principal Languages: Slovenian; English,"register.metadata.record.language:[""English"", ""Slovak""]||register.metadata.record.language_code:[""en"", ""sk""]",,
+Principal Languages: Polish,"register.metadata.record.language:[""Polish""]||register.metadata.record.language_code:[""pl""]",,
+Principal Languages: Norwegian; English,"register.metadata.record.language:[""English"", ""Norwegian""]||register.metadata.record.language_code:[""en"", ""no""]",,
+Principal Languages: Norwegian,"register.metadata.record.language:[""Norwegian""]||register.metadata.record.language_code:[""no""]",,
+Principal Languages: Japanese; English,"register.metadata.record.language:[""English"", ""Japanese""]||register.metadata.record.language_code:[""en"", ""ja""]",,
+Principal Languages: Italian; French; English; German,"register.metadata.record.language:[""English"", ""Italian"", ""French"", ""German""]||register.metadata.record.language_code:[""en"", ""it"", ""fr"", ""de""]",,
+Principal Languages: Hungarian; English; German,"register.metadata.record.language:[""English"", ""Hungarian"", ""German""]||register.metadata.record.language_code:[""en"", ""hu"", ""de""]",,
+Principal Languages: Greek,"register.metadata.record.language:[""Greek""]||register.metadata.record.language_code:[""el""]",,
+Principal Languages: English; Welsh; Irish,"register.metadata.record.language:[""English"", ""Welsh"", ""Irish""]||register.metadata.record.language_code:[""en"", ""cy"", ""ga""]",,
+Principal Languages: English; Serbian,"register.metadata.record.language:[""English"", ""Serbian""]||register.metadata.record.language_code:[""en"", ""sr""]",,
+Principal Languages: English; Russian; Ukrainian,"register.metadata.record.language:[""English"", ""Ukranian"", ""Russian""]||register.metadata.record.language_code:[""en"", ""uk"", ""ru""]",,
+Principal Languages: English; Malayalam,"register.metadata.record.language:[""English"", ""Malayalam""]||register.metadata.record.language_code:[""en"", ""ml""]",,
+Principal Languages: English; Macedonian,"register.metadata.record.language:[""English"", ""Macedonian""]||register.metadata.record.language_code:[""en"", ""mk""]",,
+Principal Languages: English; Italian; French; Spanish,"register.metadata.record.language:[""English"", ""Italian"", ""French"", ""Spanish""]||register.metadata.record.language_code:[""en"", ""it"", ""fr"", ""es""]",,
+Principal Languages: English; Italian; French; German,"register.metadata.record.language:[""English"", ""Italian"", ""French"", ""German""]||register.metadata.record.language_code:[""en"", ""it"", ""fr"", ""de""]",,
+Principal Languages: English; Italian,"register.metadata.record.language:[""English"", ""Italian""]||register.metadata.record.language_code:[""en"", ""it""]",,
+Principal Languages: English; Hindi; Urdu; Punjabi,"register.metadata.record.language:[""English"", ""Hindi"", ""Urdu"", ""Punjabi""]||register.metadata.record.language_code:[""en"", ""hi"", ""ur"", ""pa""]",,
+Principal Languages: English; Hindi; Gujarati; Sanskrit,"register.metadata.record.language:[""English"", ""Hindi"", ""Gujarati"", ""Sanskrit""]||register.metadata.record.language_code:[""en"", ""hi"", ""gu"", ""sa""]",,
+Principal Languages: English; German,"register.metadata.record.language:[""English"", ""German""]||register.metadata.record.language_code:[""en"", ""de""]",,
+Principal Languages: English; French; Spanish; Japanese,"register.metadata.record.language:[""English"", ""French"", ""Spanish"", ""Japanese""]||register.metadata.record.language_code:[""en"", ""fr"", ""es"", ""ja""]",,
+Principal Languages: English; French; German; Spanish,"register.metadata.record.language:[""English"", ""French"", ""German"", ""Spanish""]||register.metadata.record.language_code:[""en"", ""fr"", ""de"", ""es""]",,
+Principal Languages: English; Dutch,"register.metadata.record.language:[""English"", ""Dutch""]||register.metadata.record.language_code:[""en"", ""nl""]",,
+Principal Languages: English; Chinese,"register.metadata.record.language:[""English"", ""Chinese""]||register.metadata.record.language_code:[""en"", ""zh""]",,
+Principal Languages: English; Afrikaans,"register.metadata.record.language:[""English"", ""Afrikaans""]||register.metadata.record.language_code:[""en"", ""af""]",,
+Principal Languages: Dutch,"register.metadata.record.language:[""Dutch""]||register.metadata.record.language_code:[""nl""]",,
+Principal Languages: Croatian; English,"register.metadata.record.language:[""English"", ""Croatian""]||register.metadata.record.language_code:[""en"", ""hr""]",,
+Principal Languages: Chinese; English,"register.metadata.record.language:[""English"", ""Chinese""]||register.metadata.record.language_code:[""en"", ""zh""]",,
+Principal Languages: Arabic; English; French,"register.metadata.record.language:[""English"", ""Arabic"", ""French""]||register.metadata.record.language_code:[""en"", ""ar"", ""fr""]",,
+Items will be retained for at least 6 years from the date of deposition.,,Keep,
+Items will be retained for at least 50 years from the date of deposition.,,Keep,
+Items will be retained for at least 3 years from the date of deposition.,,Keep,
+Items will be retained for at least 1 year from the date of deposition.,,Keep,
+"Items may only be deposited by registered students, and employees of the institution",,,Only members of the organisation can deposit their work
+Items may only be deposited by registered students of the subject community,,,Only members of the subject community can deposit their work
+"Items may only be deposited by registered students of the organisation, or their delegated agents.",,,Only students of the organisation or their representatives can deposit their work
+"Items may only be deposited by registered students of the institution, or their delegated agents.",,,Only students of the organisation or their representatives can deposit their work
+Items may only be deposited by employees of the department,,,Only employees of the department can deposit their work
+"Items may only be deposited by accredited members, and registered students of the organisation",,,Only members of the organisation can deposit their work
+"Items may only be deposited by accredited members, and registered students of the institution, or their delegated agents.",,,Members of the organisation or their representatives can deposit their work
+"Items may only be deposited by accredited members, and registered students of the institution",,,Only members of the organisation can deposit their work
+"Items may only be deposited by accredited members, and employees of the subject community",,,Only members of the organisation can deposit their work
+"Items may only be deposited by accredited members, and academic staff of the department, or their delegated agents.",,,Members of the organisation or their representatives can deposit their work
+"Items may only be deposited by accredited members, and academic staff of the department",,,Only members of the department can deposit their work
+"Items may only be deposited by accredited members, academic staff, registered students, and employees of the organisation",,,Only members of the organisation can deposit their work
+"Items may only be deposited by accredited members, academic staff, and registered students of the department, or their delegated agents.",,,Members of the organisation or their representatives can deposit their work
+"Items may only be deposited by accredited members, academic staff, and employees of the subject community, or their delegated agents.",,,Members of the subject community or ther representatives can deposit their work
+"Items may only be deposited by accredited members of the department, or their delegated agents.",,,Members of the department or their representatives can deposit their work
+"Items may only be deposited by academic staff, and registered students of the organisation, or their delegated agents.",,,Members of the organisation or their representatives can deposit their work
+"Items may only be deposited by academic staff, and registered students of the department",,,Only members of the department can deposit their work
+"Items may only be deposited by academic staff of the subject community, or their delegated agents.",,,Only staff of the organisation or their representaives can deposit their work
+Acceptable reasons for withdrawal include Journal publishers' rules,,Keep,

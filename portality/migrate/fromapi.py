@@ -1,22 +1,51 @@
-import requests, HTMLParser
+import requests, HTMLParser, csv, json, os
 from lxml import etree
 import StringIO
 from portality import models
 from incf.countryutils import transformations # need this for continents data
 import pycountry
 
+BASE_FILE_PATH = os.path.dirname(os.path.realpath(__file__))
+
 h = HTMLParser.HTMLParser()
 
-"""
+policy_map_path = os.path.join(BASE_FILE_PATH, "..", "..", "policy_terms_normalised.csv")
+reader = csv.reader(open(policy_map_path))
+policy_map = {}
+instruction_map = {}
+first = True
+for row in reader:
+    if first:
+        first = False
+        continue
 
+    # see if there's a mapping from an old to new, if so record it
+    old = row[0]
+    new = row[3]
+    if new is not None and new.strip() != "":
+        policy_map[old.strip()] = new.strip()
+        continue
+
+    # see if there's a special instruction
+    instruction = row[1]
+    if instruction is not None and instruction.strip() != "":
+        instruction_map[old.strip()] = instruction.strip()
+        parts = instruction.split(":")
+        continue
+
+    # see if we should just keep the existing thing
+    keep = row[2]
+    if keep.lower() == "keep":
+        policy_map[old.strip()] = old.strip()
+
+"""
 resp = requests.get("http://opendoar.org/api13.php?all=y&show=max")
 # do something to convert the request into a stream reader, like use StringIO
 f = StringIO.StringIO(resp.text)
 """
 
-path = "opendoar.xml"
+path = os.path.join(BASE_FILE_PATH, "..", "..", "opendoar.xml")
 f = open(path)
-
 xml = etree.parse(f)
 root = xml.getroot()
 repos = root.find("repositories")
@@ -42,6 +71,22 @@ def _extract(repo, field, target_dict, target_field, unescape=False, lower=False
             else:
                 target_dict[target_field] = val
 
+def _apply(obj, stack, cursor, value):
+    field = stack[cursor]
+    if isinstance(obj, list):
+        for o in obj:
+            _apply(o, stack, cursor, value)
+        return
+    elif isinstance(obj, dict):
+        if cursor + 1 > len(stack) - 1:
+            obj[field] = value
+        else:
+            o = obj.get(field)
+            _apply(o, stack, cursor + 1, value)
+        return
+    else:
+        return
+
 def migrate_repo(repo):
     # the various components we need to assemble
     opendoar = {}
@@ -53,6 +98,9 @@ def migrate_repo(repo):
     register = {}
     software = {}
     policies = []
+
+    # a record of the patches to be applied to the data (mostly come from the policy data)
+    patches = []
     
     # original opendoar id
     odid = repo.get("rID")
@@ -164,13 +212,24 @@ def migrate_repo(repo):
     for p in polel:
         policy = {}
         _extract(p, "policyType", policy, "policy_type")
-        _extract(p, "policyGrade", policy, "policy_grade")
         posel = p.find("poStandard")
         if posel is not None:
             policy["terms"] = []
             for item in posel:
-                policy["terms"].append(item.text)
-        policies.append(policy)
+                t = item.text.strip()
+
+                # only keep terms which have mappings in the policy map
+                mapped = policy_map.get(t)
+                if mapped is not None:
+                    policy["terms"].append(mapped)
+
+                # look for any special instructions on the term
+                patch = instruction_map.get(t)
+                if patch is not None:
+                    patches.append(patch)
+
+        if len(policy.get("terms", [])) > 0:
+            policies.append(policy)
     
     # contacts
     conel = repo.find("contacts")
@@ -209,11 +268,17 @@ def migrate_repo(repo):
             "record" : metadata
         }
     ]
-    register["software"] = [software]
-    register["contact"] = contacts
-    register["organisation"] = [{"details" : organisation, "role" : ["host"]}] # add a default role
-    register["policy"] = policies
-    register["api"] = apis
+
+    if len(software.keys()) > 0:
+        register["software"] = [software]
+    if len(contacts) > 0:
+        register["contact"] = contacts
+    if len(organisation.keys()) > 0:
+        register["organisation"] = [{"details" : organisation, "role" : ["host"]}] # add a default role
+    if len(policies) > 0:
+        register["policy"] = policies
+    if len(apis) > 0:
+        register["api"] = apis
     
     opendoar["in_opendoar"] = True
     
@@ -226,7 +291,20 @@ def migrate_repo(repo):
     
     statistics["third_party"] = "opendoar"
     statistics["type"] = "item_count"
-    
+
+    # apply any additional field patches
+    for patch in patches:
+        segments = patch.split("||")
+        for s in segments:
+            parts = s.split(":", 1)
+            field = parts[0]
+            try:
+                value = json.loads(parts[1])
+            except ValueError:
+                value = parts[1]
+            stack = field.split(".")
+            _apply(record, stack, 0, value)
+
     return record, [statistics]
 
 for repo in repos:
