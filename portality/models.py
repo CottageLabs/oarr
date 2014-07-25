@@ -136,7 +136,7 @@ class Register(dao.RegisterDAO):
                 "objects" : ["record"],
                 "object_entries" : {
                     "record" : {
-                        "fields" : ["country", "country_code", "continent", "continent_code", "twitter", "acronym", "description", "established_date", "name", "url"],
+                        "fields" : ["country", "country_code", "continent", "continent_code", "twitter", "acronym", "description", "established_date", "name", "url", "policy_url"],
                         "lists" : ["language", "language_code", "subject", "repository_type", "certification", "content_type"],
                         "list_entries" : {
                             "subject" : {
@@ -222,7 +222,8 @@ class Register(dao.RegisterDAO):
                         ],
                         "repository_type" : [<list of vocabulary terms for the repository>],
                         "certification" : [<list of certifications held by this repository>],
-                        "content_type" : [<list of vocabulary terms for the content in this repository>]
+                        "content_type" : [<list of vocabulary terms for the content in this repository>],
+                        "policy_url" : "<url at which the repository's policy info can be found>"
                     }
                 }
             ],

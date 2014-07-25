@@ -392,7 +392,8 @@ The Register Index is the place where repository metadata and administrative dat
                         ],
                         "repository_type" : [<list of vocabulary terms for the repository>],
                         "certification" : [<list of certifications held by this repository>],
-                        "content_type" : [<list of vocabulary terms for the content in this repository>]
+                        "content_type" : [<list of vocabulary terms for the content in this repository>],
+                        "policy_url" : "<url for where the repository's policy terms can be found>"
                     }
                 }
             ],
