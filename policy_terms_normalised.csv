@@ -260,3 +260,11 @@ Items may only be deposited by employees of the department,,,Only employees of t
 "Items may only be deposited by academic staff, and registered students of the department",,,Only members of the department can deposit their work
 "Items may only be deposited by academic staff of the subject community, or their delegated agents.",,,Only staff of the organisation or their representaives can deposit their work
 Acceptable reasons for withdrawal include Journal publishers' rules,,Keep,
+Items will be migrated to the new file formats where necessary ,,,File formats may be changed to ensure readability
+"Where possible, software emulations will be provided to access un-migrated formats",,,Access to some files may be through emulation
+It may not be possible to guarantee the readability of some unusual file formats,,,Unusual file formats may not be made readable
+The repository is working with external partners to develop and implement software emulations for the old file formats,,,The repository is working with external partners to develop emulators
+"URLs will continue to point to 'tombstone' citations, to avoid broken links and to retain item histories, with a note explaining the reasons for withdrawal",,,"URLs will continue to point to 'tombstone' citations, with a note explaining the reasons for withdrawal"
+The earlier version may be with drawn from public view,,,Previous versions of documents will not be public
+The item's persistent URL will always link to the latest version ,,,Persistent URLs point to latest versions
+"There will be links between earlier and later versions, with the most recent version clearly identified",,,Versions of documents are linked
