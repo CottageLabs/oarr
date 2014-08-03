@@ -181,7 +181,7 @@ class TestIntegration(TestCase):
         
         resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
         assert resp.status_code == 400, resp.status_code
-    
+
     ##########################################################
     # Tests for retrieving register objects
     ##########################################################
@@ -406,7 +406,76 @@ class TestIntegration(TestCase):
         assert j.get("admin", {}).get("test5", {}).get("mykey") == "my value", j
         assert j.get("admin", {}).get("test5", {}).get("otherkey") == "some value"
         assert j.get("admin", {}).get("test3", {}).get("myadmin") == "hereitis"
-    
+
+    def test_03_04_overwrite_dates(self):
+        # create an initial register
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+
+        # retrieve it
+        loc = resp.headers["location"]
+        ret = requests.get(loc)
+        j = ret.json()
+
+        # check that it has some dates
+        cd = j.get("created_date")
+        lm = j.get("last_updated")
+        assert cd is not None
+        assert lm is not None
+
+        # try to overwrite these
+        date_reg = {
+            "created_date" : "2001-01-01T00:00:00Z",
+            "last_updated" : "2002-01-01T00:00:00Z",
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            }
+        }
+
+        resp = requests.post(loc + "?api_key=" + AUTH_TOKEN_1, json.dumps(date_reg))
+
+        # allow the index time to refresh
+        time.sleep(2)
+
+        # request the object
+        ret = requests.get(loc)
+        j = ret.json()
+
+        # check that it has some dates
+        cd2 = j.get("created_date")
+        lm2 = j.get("last_updated")
+        assert cd is not None
+        assert lm is not None
+
+        # and check that the cd is the same as the original and the last modified is current
+        assert cd2 == cd
+        assert lm2 != "2002-01-01T00:00:00Z"
+
+
     ##########################################################
     ## Tests for overwriting a register object
     ##########################################################
@@ -597,7 +666,74 @@ class TestIntegration(TestCase):
         assert j.get("admin", {}).get("test5", {}).get("mykey") == "my value", j
         assert j.get("admin", {}).get("test5", {}).get("otherkey") == "some value"
         assert j.get("admin", {}).get("test3", {}).get("myadmin") == "hereitis"
-    
+
+    def test_04_04_overwrite_dates(self):
+        # create an initial register
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+
+        # retrieve it
+        loc = resp.headers["location"]
+        ret = requests.get(loc)
+        j = ret.json()
+
+        # check that it has some dates
+        cd = j.get("created_date")
+        lm = j.get("last_updated")
+        assert cd is not None
+        assert lm is not None
+
+        # try to overwrite these
+        date_reg = {
+            "created_date" : "2001-01-01T00:00:00Z",
+            "last_updated" : "2002-01-01T00:00:00Z",
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            }
+        }
+        resp = requests.put(loc + "?api_key=" + AUTH_TOKEN_1, json.dumps(date_reg))
+
+        # allow the index time to refresh
+        time.sleep(2)
+
+        # request the object
+        ret = requests.get(loc)
+        j = ret.json()
+
+        # check that it has some dates
+        cd2 = j.get("created_date")
+        lm2 = j.get("last_updated")
+        assert cd is not None
+        assert lm is not None
+
+        # and check that the cd is the same as the original and the last modified is current
+        assert cd2 == cd
+        assert lm2 != "2002-01-01T00:00:00Z"
+
     ##########################################################
     ## Tests for deleting a register object
     ##########################################################

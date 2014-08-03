@@ -46,6 +46,10 @@ class RegistryAPI(object):
         
         # prune the third party account data if necessary
         cls._prune_third_party(account, new_register)
+
+        # clear the created date and last updated date -> the client can't set these, only the system.
+        # they will be allocated at save for new records
+        cls._clear_admin_dates(new_register)
         
         # we may be getting admin data too
         if "admin" in new_register:
@@ -74,6 +78,10 @@ class RegistryAPI(object):
         
         # prune the third party account data if necessary
         cls._prune_third_party(account, new_register)
+
+        # clear the created date and last updated date -> the client can't set these, only the system.
+        # they will be merged in from the old version of the record
+        cls._clear_admin_dates(new_register)
         
         # we may be getting admin data too
         if "admin" in new_register:
@@ -100,6 +108,10 @@ class RegistryAPI(object):
         
         # prune the third party account data if necessary
         cls._prune_third_party(account, new_register)
+
+        # clear the created date and last updated date -> the client can't set these, only the system.
+        # they will be merged in from the old version of the record
+        cls._clear_admin_dates(new_register)
         
         # we may be getting admin data too
         if "admin" in new_register:
@@ -189,7 +201,14 @@ class RegistryAPI(object):
                 remove_keys.append(key)
         for k in remove_keys:
             del register["admin"][k]
-    
+
+    @classmethod
+    def _clear_admin_dates(cls, register):
+        if "created_date" in register:
+            del register["created_date"]
+        if "last_updated" in register:
+            del register["last_updated"]
+
     @classmethod
     def _normalise_date(cls, date):
         try:
