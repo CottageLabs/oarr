@@ -2,6 +2,7 @@ import requests, HTMLParser, csv, json, os
 from lxml import etree
 import StringIO
 from portality import models
+from portality.core import app # we don't use it, but this ensures the app is initialised
 from incf.countryutils import transformations # need this for continents data
 import pycountry
 

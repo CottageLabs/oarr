@@ -71,7 +71,7 @@ class RegistryAPI(object):
         # check permissions on the account
         if not account.registry_access:
             raise AuthorisationException("This user account does not have permission to modify objects in the registry")
-        
+
         # ensure the register object has the right structure
         if "register" not in new_register:
             new_register = {"register" : new_register}
@@ -101,7 +101,14 @@ class RegistryAPI(object):
         # check permissions on the account
         if not account.registry_access:
             raise AuthorisationException("This user account does not have permission to overwrite objects in the registry")
-            
+
+        # new register must contain some data
+        if len(new_register.keys()) == 0:
+            raise APIException("If you want to delete, use the delete endpoint")
+        if "register" in new_register:
+            if len(new_register["register"].keys()) == 0:
+                raise APIException("If you want to delete, use the delete endpoint")
+
         # ensure the register object has the right structure
         if "register" not in new_register:
             new_register = {"register" : new_register}

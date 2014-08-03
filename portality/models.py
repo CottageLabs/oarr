@@ -353,6 +353,7 @@ class Register(dao.RegisterDAO):
         admin = new_reg.get("admin", {})
         for k, v in admin.iteritems():
             self.data["admin"][k] = deepcopy(v)
+        self._clean_admin()
     
     def replace_register(self, new_reg):
         if not self._full_validate(new_reg):
@@ -372,6 +373,7 @@ class Register(dao.RegisterDAO):
         admin = new_reg.get("admin", {})
         for k, v in admin.iteritems():
             self.data["admin"][k] = deepcopy(v)
+        self._clean_admin()
     
     def soft_delete(self):
         dr = {"deleted" : datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")}
@@ -392,7 +394,18 @@ class Register(dao.RegisterDAO):
         if write:
             hist.save()
         return hist
-    
+
+    def _clean_admin(self):
+        admin = self.data.get("admin")
+        if admin is None:
+            return
+        deletes = []
+        for k, v in admin.iteritems():
+            if len(self.data["admin"][k].keys()) == 0:
+                deletes.append(k)
+        for d in deletes:
+            del self.data["admin"][d]
+
     def _full_validate(self, reg):
         # validate the overall structure of the top level elements
         root_valid = self._validate_root(reg)

@@ -259,6 +259,7 @@ or in a simplified form (without any admin data):
 Send a replacement registry object to the registry.  This will have the following effects:
 
 * If the third party does not have the right to access the registry, the request will be rejected
+* If there are no fields in the registry object (you have PUT an empty dictionary), the request will be rejected.  To delete a record, use the DELETE API.
 * All fields in the object which are considered to be part of the registry will be completely replaced.  This will not affect third-party specific aspects of the record, or statistics
 * The old version of the record will be stored
 

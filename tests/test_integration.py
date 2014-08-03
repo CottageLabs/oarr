@@ -475,6 +475,62 @@ class TestIntegration(TestCase):
         assert cd2 == cd
         assert lm2 != "2002-01-01T00:00:00Z"
 
+    def test_03_05_update_empty_admin(self):
+        # create the base version
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 3",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            },
+            "admin" : {
+                "test5" : {
+                    "mykey" : "my value",
+                    "otherkey" : "some value"
+                }
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_5, json.dumps(reg))
+        loc = resp.headers["Location"]
+
+        # now send the replacement with an empty admin record
+        reg2 = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 4",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            },
+            "admin" : {
+                "test5" : {}
+            }
+        }
+        resp = requests.post(loc + "?api_key=" + AUTH_TOKEN_5, json.dumps(reg2))
+
+        # allow the index time to refresh
+        time.sleep(2)
+
+        # request the object
+        ret = requests.get(loc)
+        j = ret.json()
+
+        # check that the admin object has been removed
+        assert j.get("admin", {}).get("test5") is None
 
     ##########################################################
     ## Tests for overwriting a register object
@@ -733,6 +789,95 @@ class TestIntegration(TestCase):
         # and check that the cd is the same as the original and the last modified is current
         assert cd2 == cd
         assert lm2 != "2002-01-01T00:00:00Z"
+
+    def test_04_05_replace_empty(self):
+        # create the base version
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 3",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ],
+                "api" : [
+                    {
+                        "api_type" : "oai-pmh",
+                        "version" : "2.0"
+                    }
+                ],
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_1, json.dumps(reg))
+        loc = resp.headers["Location"]
+
+        # now send the (empty) replacement
+        reg2 = {}
+        resp = requests.put(loc + "?api_key=" + AUTH_TOKEN_1, json.dumps(reg2))
+
+        assert resp.status_code == 400
+
+    def test_04_06_replace_empty_admin(self):
+        # create the base version
+        reg = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 3",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            },
+            "admin" : {
+                "test5" : {
+                    "mykey" : "my value",
+                    "otherkey" : "some value"
+                }
+            }
+        }
+        resp = requests.post(BASE_URL + "record?api_key=" + AUTH_TOKEN_5, json.dumps(reg))
+        loc = resp.headers["Location"]
+
+        # now send the replacement with an empty admin record
+        reg2 = {
+            "register" : {
+                "metadata" : [
+                    {
+                        "lang" : "en",
+                        "default" : True,
+                        "record" : {
+                            "name" : "My Repo 4",
+                            "url" : "http://myrepo",
+                            "repository_type" : ["Institutional"]
+                        }
+                    }
+                ]
+            },
+            "admin" : {
+                "test5" : {}
+            }
+        }
+        resp = requests.put(loc + "?api_key=" + AUTH_TOKEN_5, json.dumps(reg2))
+
+        # allow the index time to refresh
+        time.sleep(2)
+
+        # request the object
+        ret = requests.get(loc)
+        j = ret.json()
+
+        # check that the admin object has been removed
+        assert j.get("admin", {}).get("test5") is None
 
     ##########################################################
     ## Tests for deleting a register object
