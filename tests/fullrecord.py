@@ -115,7 +115,6 @@ record = {
         ],
         "policy" : [
             {
-                "policy_grade": "Content policies defined",
                 "terms": [
                     "This is an institutional or departmental repository.",
                     "The repository is restricted to: ",
@@ -126,7 +125,6 @@ record = {
                 "description" : "We'll do good stuff with the content"
             },
             {
-                "policy_grade": "Metadata re-use permitted for not-for-profit purposes",
                 "terms": [
                     "Anyone may access the metadata free of charge.",
                     "The metadata may be re-used in any medium without prior permission for not-for-profit purposes",
@@ -137,7 +135,6 @@ record = {
                 "description" : "You can look at our metadata"
             },
             {
-                "policy_grade": "Re-use of full data items permitted for not-for-profit purposes",
                 "terms": [
                     "Anyone may access full items free of charge.",
                     "Single copies of full items can be: ",
@@ -147,7 +144,6 @@ record = {
                 "description" : "We like to give our data away"
             },
             {
-                "policy_grade": "Submission policies explicitly undefined",
                 "terms": [
                     "No policy registered in OpenDOAR."
                 ],
@@ -155,7 +151,6 @@ record = {
                 "description": "No policy yet, sorry"
             },
             {
-                "policy_grade": "Preservation policies explicitly undefined",
                 "terms": [
                     "No policy registered in OpenDOAR."
                 ],
@@ -177,6 +172,7 @@ record = {
                 "api_type" : "sword",
                 "version" : "2.0",
                 "base_url" : "http://cottagelabs.com/swordv2",
+                "authenticated" : True,
                 "accepts" : ["application/zip"],
                 "accept_packaging" : ["http://purl.net/sword/packaging/SimpleZip"],
             }

@@ -173,6 +173,7 @@ class Register(dao.RegisterDAO):
             },
             "api" : {
                 "fields" : ["api_type", "version", "base_url"],
+                "bools" : ["authenticated"],
                 "lists" : ["metadata_formats", "accepts", "accept_packaging"],
                 "list_entries" : {
                     "metadata_formats" : {
@@ -279,7 +280,8 @@ class Register(dao.RegisterDAO):
                     "api_type" : "<api type from known list or free text>",
                     "version" : "<version of the API>",
                     "base_url" : "<base url of API>",
-                    
+
+                    "authenticated" : True/False # is access to the API authentication controlled
                     "metadata_formats" : [{"prefix" : "<prefix>", "namespace" : "<namespace>", "schema" : "<schema>"}], # oai-pmh
                     "accepts" : [<list of accepted mimetypes>], # sword
                     "accept_packaging" : [<list of accepted package formats>], #sword

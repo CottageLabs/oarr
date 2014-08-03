@@ -450,7 +450,8 @@ The Register Index is the place where repository metadata and administrative dat
                     "api_type" : "<api type from known list or free text>",
                     "version" : "<version of the API>",
                     "base_url" : "<base url of API>",
-                    
+
+                    "authenticated" : True/False, # is access to the API controlled by authentication
                     "metadata_formats" : [{"prefix" : "<prefix>", "namespace" : "<namespace>", "schema" : "<schema>"}], # oai-pmh
                     "accepts" : [<list of accepted mimetypes>], # sword
                     "accept_packaging" : [<list of accepted package formats>], #sword
