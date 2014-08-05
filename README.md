@@ -1,5 +1,37 @@
 # Open Access Repository Registry
 
+## Installation
+
+### Dependencies
+
+1. ElasticSearch (0.90.x)
+2. Esprit - [https://github.com/richard-jones/esprit](https://github.com/richard-jones/esprit)
+
+### Process
+
+1. Install and start ElasticSearch
+2. Create your virtual environment for this application
+3. Install Epsrit into the virtual environment ("pip install -e ." in the root of the esprit application)
+4. Install this software into the virtual environment ("pip install -e ". in the root of the application)
+5. Start the application with with the standard flast web container with:
+
+    python portality/app.py
+
+### Initial data migration
+
+To migrate data from the previous version of [OpenDOAR](http://opendoar.org)
+
+1. Download the full XML export from OpenDOAR, which can be found at the following link (warning: large): [http://opendoar.org/api13.php?all=y&show=max](http://opendoar.org/api13.php?all=y&show=max)
+2. Place the file you just downloaded in the root of the application directory with the name "opendoar.xml"
+3. Run the data migrate script:
+
+    python portality/migrate/fromapi.py
+
+This will populate the index with the latest version of the data from OpenDOAR.
+
+You may also wish to import the data from [ROAR](http://roar.eprints.org), in which case see the [roar2doar documentation](https://github.com/CottageLabs/roar2doar)
+
+
 ## Usage of the Core Registry
 
 The Core Repository has two distinct ways that it is used by client systems:
