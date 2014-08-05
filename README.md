@@ -31,6 +31,27 @@ This will populate the index with the latest version of the data from OpenDOAR.
 
 You may also wish to import the data from [ROAR](http://roar.eprints.org), in which case see the [roar2doar documentation](https://github.com/CottageLabs/roar2doar)
 
+## Administration
+
+### Creating Third Party Accounts
+
+In order to give write access to ANY application that uses the OARR API, you will need to set up a user account for them, and obtain an API key.  This can be done by running the following script:
+
+    python portality/scripts/createaccount.py
+
+This script takes the following arguments.
+
+    -n, --name - the name of the third party organisation [required]
+    -c, --contactname - the name of the contact for the third party org [optional]
+    -e, --contactemail - the email address of the contact for the third party org [optional]
+    -r, --register - should the third party have write access to the register
+    -s, --stats - should the third party have write access to the statistics
+    -a, --admin - should the third party be allowed to store admin data in OARR
+
+For example, to create an account for a third party that will be able to write to the registry and to store its own admin state there, but who cannot write statistics, use a command like the following:
+
+    python portality/scripts/createaccount.py -n myapp -c "Contact Name" -e myapp@example.com -r -a
+    
 
 ## Usage of the Core Registry
 
