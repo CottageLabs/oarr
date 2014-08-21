@@ -331,18 +331,28 @@ def query():
     fields = request.values.get("fields") # <list of top level fields required>
     from_number = request.values.get("from") # <start result number>
     size = request.values.get("size") # <page size>
-    
+
     # the es argument is an encoded json string
     if es is not None:
-        es = json.loads(es)
-    
-    print es
-    
+        try:
+            es = json.loads(es)
+        except:
+            abort(400)
+
+    # expect size and from_number to be integers
+    try:
+        if from_number is not None:
+            from_number = int(from_number)
+        if size is not None:
+            size = int(size)
+    except:
+        abort(400)
+
     # fields is a comma separated list of values
     # which may consist only of "admin" or "register"
     if fields is not None:
         fields = [f.strip() for f in fields.split(",") if f.strip() in ["admin", "register"]]
-    
+
     es_result = RegistryAPI.search(es=es, q=q, fields=fields, from_number=from_number, size=size)
     
     # return a json response

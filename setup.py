@@ -10,7 +10,7 @@ setup(
         "Flask-Login==0.1.3",
         "Flask-WTF==0.8.3",
         "requests==1.1.0",
-        "esprit",
+        "esprit==0.0.2",
         #"markdown",
         #"gitpython",
         "lxml",

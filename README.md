@@ -51,7 +51,7 @@ This script takes the following arguments.
 For example, to create an account for a third party that will be able to write to the registry and to store its own admin state there, but who cannot write statistics, use a command like the following:
 
     python portality/scripts/createaccount.py -n myapp -c "Contact Name" -e myapp@example.com -r -a
-    
+
 
 ## Usage of the Core Registry
 

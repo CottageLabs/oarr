@@ -1,4 +1,5 @@
 import esprit
+from esprit.models import Query
 from portality.core import app
 
 class AccountDAO(esprit.dao.DomainObject):
@@ -183,7 +184,7 @@ class SearchQuery(object):
         if self.full_query is not None:
             q = self.full_query
         elif self.query_string is not None:
-            q = {"query" : {"query_string" : {"query" : self.query_string}}}
+            q = {"query" : {"query_string" : {"query" : Query.escape(self.query_string)}}}
         else:
             if self.from_date is not None or self.until_date is not None:
                 rq = {"range" : {"last_updated" : {}}}
