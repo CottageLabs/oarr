@@ -8,6 +8,8 @@ class AccountDAO(esprit.dao.DomainObject):
     
     @classmethod
     def pull_by_auth_token(cls, auth_token):
+        if auth_token is None:
+            return None
         q = AccountQuery(auth_token=auth_token)
         res = cls.query(q=q.query())
         accs = esprit.raw.unpack_json_result(res)
@@ -19,6 +21,8 @@ class AccountDAO(esprit.dao.DomainObject):
     
     @classmethod
     def pull_by_name(cls, name):
+        if name is None:
+            return None
         q = AccountQuery(name=name)
         res = cls.query(q=q.query())
         accs = esprit.raw.unpack_json_result(res)
