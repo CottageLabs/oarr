@@ -72,7 +72,7 @@ The metadata may be re-used in any medium without prior permission for not-for-p
 "Items may only be deposited by accredited members of the organisation, or their delegated agents.",,,Only members of the organisation can deposit their work
 The validity and authenticity of the content of submissions is checked by internal subject specialists.,,Keep,
 The repository is restricted to:Theses and dissertations,"regsiter.metadata.record.content_type:[""Theses and dissertations""]",,
-Subject Specialities: Multidisciplinary,"register.metadata.record.subject:[{""term"" : ""Multidisciplinary""}]",,
+Subject Specialities: Multidisciplinary,"register.metadata.record.subject:[""Multidisciplinary""]",,
 The administrator only vets items for relevance to the scope of the repository,,,Content checked by administrators
 Items may not be deposited until any publishers' or funders' embargo period has expired.,,,Items with embargoes cannot be deposited
 "URLs will continue to point to 'tombstone' citations, to avoid broken links and to retain item histories, with:",,Keep,
@@ -87,7 +87,7 @@ Withdrawn items' identifiers/URLs are retained transiently.,,Keep,
 "Items may only be deposited by academic staff, and registered students of the institution",,,Only members of the organisation can deposit their work
 "The administrator only vets items for the eligibility of authors/depositors, and relevance to the scope of the repository",,,Content checked by administrators
 The administrator only vets items for the eligibility of authors/depositors,,,Content checked by administrators
-Subject Specialities: Science General,"register.metadata.record.subject:[{""term"" : ""Science General""}]",,
+Subject Specialities: Science General,"register.metadata.record.subject:[""Science General""]",,
 "Items may only be deposited by accredited members, academic staff, registered students, and employees of the institution, or their delegated agents.",,,Members of the organisation of their representaives can deposit work
 "Items may only be deposited by accredited members, academic staff, and registered students of the institution",,,Only members of the organisation can deposit their work
 "Items may only be deposited by accredited members of the subject community, or their delegated agents.",,,Members of the organisation of their representaives can deposit work
@@ -111,9 +111,9 @@ The repository is restricted to:Journal articles,"regsiter.metadata.record.conte
 Principal Languages: Spanish; English,"register.metadata.record.language:[""English"", ""Spanish""]||register.metadata.record.language_code:[""en"", ""es""]",,
 Items may only be deposited by accredited members of the organisation,,,Only members of the organisation can deposit their work
 "The administrator only vets items for the eligibility of authors/depositors, and valid layout & format",,,Content checked by administrators
-Subject Specialities: Mathematics and Statistics,"register.metadata.record.subject:[{""term"" : ""Mathematics and Statistics""}]",,
-Subject Specialities: Library and Information Science,"register.metadata.record.subject:[{""term"" : ""Library and Information Science""}]",,
-Subject Specialities: Health and Medicine,"register.metadata.record.subject:[{""term"" : ""Health and Medicine""}]",,
+Subject Specialities: Mathematics and Statistics,"register.metadata.record.subject:[""Mathematics and Statistics""]",,
+Subject Specialities: Library and Information Science,"register.metadata.record.subject:[""Library and Information Science""]",,
+Subject Specialities: Health and Medicine,"register.metadata.record.subject:[""Health and Medicine""]",,
 "Items may only be deposited by accredited members, and academic staff of the institution",,,Only members of the organisation can deposit their work
 Full items must not be harvested by robots except transiently for full-text indexing,,keep,
 Deposited items may include published versions (publisher-created files),"regsiter.metadata.record.content_type:[""Journal articles""]",,
@@ -121,14 +121,14 @@ Access to some or all of the metadata is controlled.,,Keep,
 The metadata may be re-used in any medium without prior permission for not-for-profit purposes provided the repository is mentioned.,,,Metadata may be used for not for profit  freely with accreditation to repository
 "The administrator only vets items for valid layout & format, and the exclusion of spam",,,Content checked by administrators
 "The administrator only vets items for relevance to the scope of the repository, and valid layout & format",,,Content checked by administrators
-Subject Specialities: Arts and Humanities General,"register.metadata.record.subject:[{""term"" : ""Arts and Humanities General""}]",,
+Subject Specialities: Arts and Humanities General,"register.metadata.record.subject:[""Arts and Humanities General""]",,
 Items will be retained for at least 10 years from the date of deposition.,,Keep,
 Items may only be deposited by employees of the institution,,,Only employees of the organisation can deposit their work
 "Items may only be deposited by academic staff, registered students, and employees of the institution",,,Only members of the organisation can deposit their work
 "Items may only be deposited by academic staff of the organisation, or their delegated agents.",,,Only staff of the organisation or their representatives can deposit their work
 All re-use of full items is prohibited.,,Keep,
-Subject Specialities: History and Archaeology (5),"register.metadata.record.subject:[{""term"" : ""History and Archaeology""}]",,
-Subject Specialities: Education (5),"register.metadata.record.subject:[{""term"" : ""Education""}]",,
+Subject Specialities: History and Archaeology (5),"register.metadata.record.subject:[""History and Archaeology""]",,
+Subject Specialities: Education (5),"register.metadata.record.subject:[""Education""]",,
 Principal Languages: Spanish (5),"register.metadata.record.language:[""Spanish""]||register.metadata.record.language_code:[""es""]",,
 Principal Languages: French; English (5),"register.metadata.record.language:[""English"", ""French""]||register.metadata.record.language_code:[""en"", ""fr""]",,
 Items will be retained for at least 5 years from the date of deposition.,,Keep,
@@ -146,9 +146,9 @@ The repository is working with external partners to record preservation metadata
 The repository is restricted to:Unpublished reports and working papers,,Ignore,
 The repository is restricted to:,,Ignore,
 The metadata must not be re-used in any medium for not-for-profit purposes without formal permission.,,,Permission needed to use metadata
-Subject Specialities: Physics and Astronomy,"register.metadata.record.subject:[{""term"" : ""Physics and Astronomy""}]",,
-Subject Specialities: Law and Politics,"register.metadata.record.subject:[{""term"" : ""Law and Politics""}]",,
-"Subject Specialities: Agriculture, Food and Veterinary","register.metadata.record.subject:[{""term"" : ""Agriculture, Food and Veterinary""}]",,
+Subject Specialities: Physics and Astronomy,"register.metadata.record.subject:[""Physics and Astronomy""]",,
+Subject Specialities: Law and Politics,"register.metadata.record.subject:[""Law and Politics""]",,
+"Subject Specialities: Agriculture, Food and Veterinary","register.metadata.record.subject:[""Agriculture, Food and Veterinary""]",,
 Single copies of full items can be:,,Ignore,
 Principal Languages: English; French,"register.metadata.record.language:[""English"", ""French""]||register.metadata.record.language_code:[""en"", ""fr""]",,
 "Items may only be deposited by accredited members, academic staff, registered students, and employees of the institution",,,Only members of the organisation can deposit their work
@@ -168,13 +168,13 @@ The metadata must not be re-used in any medium for commercial purposes or not-fo
 The metadata may be re-used in any medium without prior permission for not-for-profit purposes and re-sold commercially provided the repository is mentioned.,,,Metadata may be used freely with accreditation to repository
 "The administrator only vets items for the eligibility of authors/depositors, and the exclusion of spam",,,Content checked by administrators
 "The administrator only vets items for relevance to the scope of the repository, and the exclusion of spam",,,Content checked by administrators
-Subject Specialities: Psychology,"register.metadata.record.subject:[{""term"" : ""Psychology""}]",,
-Subject Specialities: Philosophy and Religion,"register.metadata.record.subject:[{""term"" : ""Philosophy and Religion""}]",,
-Subject Specialities: Language and Literature,"register.metadata.record.subject:[{""term"" : ""Language and Literature""}]",,
-Subject Specialities: Geography and Regional Studies,"register.metadata.record.subject:[{""term"" : ""Geography and Regional Studies""}]",,
-Subject Specialities: Earth and Planetary Sciences,"register.metadata.record.subject:[{""term"" : ""Earth and Planetary Sciences""}]",,
-Subject Specialities: Computers and IT,"register.metadata.record.subject:[{""term"" : ""Computers and IT""}]",,
-Subject Specialities: Business and Economics,"register.metadata.record.subject:[{""term"" : ""Business and Economics""}]",,
+Subject Specialities: Psychology,"register.metadata.record.subject:[""Psychology""]",,
+Subject Specialities: Philosophy and Religion,"register.metadata.record.subject:[""Philosophy and Religion""]",,
+Subject Specialities: Language and Literature,"register.metadata.record.subject:[""Language and Literature""]",,
+Subject Specialities: Geography and Regional Studies,"register.metadata.record.subject:[""Geography and Regional Studies""]",,
+Subject Specialities: Earth and Planetary Sciences,"register.metadata.record.subject:[""Earth and Planetary Sciences""]",,
+Subject Specialities: Computers and IT,"register.metadata.record.subject:[""Computers and IT""]",,
+Subject Specialities: Business and Economics,"register.metadata.record.subject:[""Business and Economics""]",,
 Principal Languages: Turkish,"register.metadata.record.language:[""Turkish""]||register.metadata.record.language_code:[""tr""]",,
 Principal Languages: Spanish; English; French,"register.metadata.record.language:[""Spanish"", ""English"", ""French""]||register.metadata.record.language_code:[""es"", ""en"", ""fr""]",,
 Principal Languages: Russian; English,"register.metadata.record.language:[""English"", ""Russian""]||register.metadata.record.language_code:[""en"", ""ru""]",,
@@ -199,11 +199,11 @@ Deposited items may include submitted versions (as sent to journals for peer-rev
 The repository is restricted to:Learning Objects,"regsiter.metadata.record.content_type:[""Learning Objects""]",,
 The repository holds all types of materials except:Theses and dissertations,,,
 The repository holds all types of materials except:Datasets,,,
-Subject Specialities: Social Sciences General,"register.metadata.record.subject:[{""term"" : ""Social Sciences General""}]",,
-Subject Specialities: Mechanical Engineering and Materials,"register.metadata.record.subject:[{""term"" : ""Mechanical Engineering and Materials""}]",,
-Subject Specialities: Fine and Performing Arts,"register.metadata.record.subject:[{""term"" : ""Fine and Performing Arts""}]",,
-Subject Specialities: Ecology and Environment,"register.metadata.record.subject:[{""term"" : ""Ecology and Environment""}]",,
-Subject Specialities: Chemistry and Chemical Technology,"register.metadata.record.subject:[{""term"" : ""Chemistry and Chemical Technology""}]",,
+Subject Specialities: Social Sciences General,"register.metadata.record.subject:[""Social Sciences General""]",,
+Subject Specialities: Mechanical Engineering and Materials,"register.metadata.record.subject:[""Mechanical Engineering and Materials""]",,
+Subject Specialities: Fine and Performing Arts,"register.metadata.record.subject:[""Fine and Performing Arts""]",,
+Subject Specialities: Ecology and Environment,"register.metadata.record.subject:[""Ecology and Environment""]",,
+Subject Specialities: Chemistry and Chemical Technology,"register.metadata.record.subject:[""Chemistry and Chemical Technology""]",,
 Principal Languages: Ukrainian; English; Russian,"register.metadata.record.language:[""English"", ""Ukranian"", ""Russian""]||register.metadata.record.language_code:[""en"", ""uk"", ""ru""]",,
 Principal Languages: Turkish; English,"register.metadata.record.language:[""English"", ""Turkish""]||register.metadata.record.language_code:[""en"", ""tr""]",,
 Principal Languages: Swedish; English,"register.metadata.record.language:[""English"", ""Swedish""]||register.metadata.record.language_code:[""en"", ""sv""]",,

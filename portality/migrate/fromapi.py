@@ -186,7 +186,7 @@ def migrate_repo(repo):
             subject = {}
             _extract(c, "clCode", subject, "code")
             _extract(c, "clTitle", subject, "term", unescape=True)
-            metadata["subject"].append(subject)
+            metadata["subject"].append(subject.get("term")) # FIXME: a bit of a round trip here, but will suffice
     
     # languages
     langs = repo.find("languages")
