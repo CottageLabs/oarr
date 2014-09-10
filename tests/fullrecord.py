@@ -29,13 +29,7 @@ record = {
                     "language_code" : ["en", "no"],
                     "name" : "My Repository @ Cottage Labs",
                     "url" : "http://cottagelabs.com/news",
-                    "subject" : [
-                        {
-                            "scheme" : "lcsh",
-                            "term" : "Medicine",
-                            "code" : "M23"
-                        }
-                    ],
+                    "subject" : ["Medicine"],
                     "repository_type" : ["Institutional"],
                     "certification" : ["DINI", "RIOXX"],
                     "content_type" : ["Journal articles", "Reports"]

@@ -2,6 +2,7 @@ from portality import dao, schema
 from flask.ext.login import UserMixin
 from copy import deepcopy
 from datetime import datetime
+from portality.core import app
 
 class ModelException(Exception):
     pass
@@ -137,12 +138,7 @@ class Register(dao.RegisterDAO):
                 "object_entries" : {
                     "record" : {
                         "fields" : ["country", "country_code", "continent", "continent_code", "twitter", "acronym", "description", "established_date", "name", "url", "policy_url"],
-                        "lists" : ["language", "language_code", "subject", "repository_type", "certification", "content_type"],
-                        "list_entries" : {
-                            "subject" : {
-                                "fields" : ["scheme", "term", "code"]
-                            }
-                        }
+                        "lists" : ["language", "language_code", "subject", "repository_type", "certification", "content_type"]
                     }
                 }
             },
@@ -214,13 +210,7 @@ class Register(dao.RegisterDAO):
                         "language_code" : [<languages of content found in repo (iso-639-1)>],
                         "name" : "<name of repository>",
                         "url" : "<url for repository home page>",
-                        "subject" : [
-                            { 
-                                "scheme" : "<classification scheme>",
-                                "term" : "<classification term>",
-                                "code" : "<classification code>"
-                            }
-                        ],
+                        "subject" : ["<list of subject terms>"],
                         "repository_type" : [<list of vocabulary terms for the repository>],
                         "certification" : [<list of certifications held by this repository>],
                         "content_type" : [<list of vocabulary terms for the content in this repository>],

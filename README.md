@@ -437,13 +437,7 @@ The Register Index is the place where repository metadata and administrative dat
                         "language_code" : [<languages of content found in repo (iso-639-1)>],
                         "name" : "<name of repository>",
                         "url" : "<url for repository home page>",
-                        "subject" : [
-                            { 
-                                "scheme" : "<classification scheme>",
-                                "term" : "<classification term>",
-                                "code" : "<classification code>"
-                            }
-                        ],
+                        "subject" : ["<list of subject terms>"],
                         "repository_type" : [<list of vocabulary terms for the repository>],
                         "certification" : [<list of certifications held by this repository>],
                         "content_type" : [<list of vocabulary terms for the content in this repository>],

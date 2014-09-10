@@ -29,12 +29,7 @@ _example1 = {
                     "description": "This virtual gallery is a sampling of the upward of 9,000 specimens from the Denison Geosciences Earth materials collection",
                     "content_type": ["Multimedia and audio-visual materials"],
                     "repository_type": ["Institutional"],
-                    "subject": [
-                        {
-                            "term": "Earth and Planetary Sciences",
-                            "code": "Cam"
-                        }
-                    ]
+                    "subject": ["Earth and Planetary Sciences"]
                 }
             }
         ]
@@ -73,7 +68,6 @@ _example2 = {
         ],
         "policy": [
             {
-                "policy_grade": "Content policies defined",
                 "terms": [
                     "This is an institutional or departmental repository.",
                     "The repository is restricted to: ",
@@ -84,7 +78,6 @@ _example2 = {
                 "policy_type": "Content"
             },
             {
-                "policy_grade": "Metadata re-use policy explicitly undefined",
                 "terms": [
                     "No policy registered in OpenDOAR."
                 ],
@@ -105,12 +98,7 @@ _example2 = {
                         "Theses and dissertations"
                     ],
                     "repository_type": ["Institutional"],
-                    "subject": [
-                        {
-                            "term": "Health and Medicine",
-                            "code": "Ce"
-                        }
-                    ]
+                    "subject": ["Health and Medicine"]
                 }
             }
         ],
