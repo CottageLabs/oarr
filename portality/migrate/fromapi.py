@@ -5,6 +5,7 @@ from portality import models
 from portality.core import app # we don't use it, but this ensures the app is initialised
 from incf.countryutils import transformations # need this for continents data
 import pycountry
+from datetime import datetime
 
 BASE_FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -280,8 +281,10 @@ def migrate_repo(repo):
         register["policy"] = policies
     if len(apis) > 0:
         register["api"] = apis
-    
+
+    # final few opendoar admin values
     opendoar["in_opendoar"] = True
+    opendoar["last_saved"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
     
     record = {
         "register" : register,
